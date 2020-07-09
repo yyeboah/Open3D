@@ -59,3 +59,8 @@ open3d_show_and_abort_on_warning(core)
 if (BUILD_CUDA_MODULE)
     target_include_directories(core SYSTEM PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 endif()
+
+message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+find_package(MKL REQUIRED)
+message(STATUS "MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
+message(STATUS "MKL_LIBRARIES: ${MKL_LIBRARIES}")

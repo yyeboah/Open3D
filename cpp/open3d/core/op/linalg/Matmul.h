@@ -34,10 +34,10 @@
 namespace open3d {
 namespace core {
 
-void Matmul(const Tensor& A, const Tensor& B, Tensor& C);
+Tensor Matmul(const Tensor& A, const Tensor& B);
 
 #ifdef BUILD_CUDA_MODULE
-void MatmulCUDA(Dtype dtype,
+void CUDAMatmul(Dtype dtype,
                 void* A_data,
                 void* B_data,
                 void* C_data,
@@ -45,7 +45,7 @@ void MatmulCUDA(Dtype dtype,
                 int k,
                 int n);
 #endif
-void MatmulCPU(Dtype dtype,
+void CPUMatmul(Dtype dtype,
                void* A_data,
                void* B_data,
                void* C_data,

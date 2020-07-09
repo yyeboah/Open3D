@@ -30,20 +30,22 @@
 namespace open3d {
 namespace core {
 
-void Matmul(const Tensor& A, const Tensor& B, Tensor& output) {
+void Matmul(const Tensor& lhs, const Tensor& rhs, Tensor& dst) {
     // Check devices
-    Device device = A.GetDevice();
-    if (device != B.GetDevice()) {
-        utility::LogError("Tensor A device {} and Tensor B device {} mismatch",
-                          A.GetDevice().ToString(), B.GetDevice().ToString());
+    Device device = lhs.GetDevice();
+    if (device != rhs.GetDevice()) {
+        utility::LogError(
+                "Tensor lhs device {} and Tensor rhs device {} mismatch",
+                lhs.GetDevice().ToString(), rhs.GetDevice().ToString());
     }
 
     // Check dtypes
-    Dtype dtype = A.GetDtype();
-    if (dtype != B.GetDtype()) {
-        utility::LogError("Tensor A dtype {} and Tensor B dtype {} mismatch",
-                          DtypeUtil::ToString(A.GetDtype()),
-                          DtypeUtil::ToString(B.GetDtype()));
+    Dtype dtype = lhs.GetDtype();
+    if (dtype != rhs.GetDtype()) {
+        utility::LogError(
+                "Tensor lhs dtype {} and Tensor rhs dtype {} mismatch",
+                DtypeUtil::ToString(lhs.GetDtype()),
+                DtypeUtil::ToString(rhs.GetDtype()));
     }
     if (dtype != Dtype::Float32 && dtype != Dtype::Float64) {
         utility::LogError(
@@ -53,42 +55,44 @@ void Matmul(const Tensor& A, const Tensor& B, Tensor& output) {
     }
 
     // Check shapes
-    SizeVector A_shape = A.GetShape();
-    SizeVector B_shape = B.GetShape();
+    SizeVector lhs_shape = lhs.GetShape();
+    SizeVector rhs_shape = rhs.GetShape();
 
-    if (A_shape.size() != 2) {
-        utility::LogError("Tensor A must be 2D, but got {}D", A_shape.size());
+    if (lhs_shape.size() != 2) {
+        utility::LogError("Tensor lhs must be 2D, but got {}D",
+                          lhs_shape.size());
     }
-    if (B_shape.size() != 1 && B_shape.size() != 2) {
+    if (rhs_shape.size() != 1 && rhs_shape.size() != 2) {
         utility::LogError(
-                "Tensor B must be 1D (vector) or 2D (matrix), but got {}D",
-                B_shape.size());
+                "Tensor rhs must be 1D (vector) or 2D (matrix), but got {}D",
+                rhs_shape.size());
     }
-    if (A_shape[1] != B_shape[0]) {
-        utility::LogError("Tensor A columns {} mismatch with Tensor B rows {}",
-                          A_shape[1], B_shape[0]);
+    if (lhs_shape[1] != rhs_shape[0]) {
+        utility::LogError(
+                "Tensor lhs columns {} mismatch with Tensor rhs rows {}",
+                lhs_shape[1], rhs_shape[0]);
     }
 
     // Dispatch to backends
-    int64_t m = A_shape[0];
-    int64_t k = A_shape[1];
-    int64_t n = B_shape.size() == 2 ? B_shape[1] : 1;
-    output = Tensor::Empty({m, n}, dtype, device);
+    int64_t m = lhs_shape[0];
+    int64_t k = lhs_shape[1];
+    int64_t n = rhs_shape.size() == 2 ? rhs_shape[1] : 1;
+    dst = Tensor::Empty({m, n}, dtype, device);
 
-    Tensor A_contiguous = A.Contiguous();
-    Tensor B_contiguous = B.Contiguous();
-    void* A_data = A_contiguous.GetDataPtr();
-    void* B_data = B_contiguous.GetDataPtr();
-    void* C_data = output.GetDataPtr();
+    Tensor lhs_contiguous = lhs.Contiguous();
+    Tensor rhs_contiguous = rhs.Contiguous();
+    void* lhs_data = lhs_contiguous.GetDataPtr();
+    void* rhs_data = rhs_contiguous.GetDataPtr();
+    void* dst_data = dst.GetDataPtr();
 
     if (device.GetType() == Device::DeviceType::CUDA) {
 #ifdef BUILD_CUDA_MODULE
-        MatmulCUDA(dtype, A_data, B_data, C_data, m, k, n);
+        MatmulCUDA(dtype, lhs_data, rhs_data, dst_data, m, k, n);
 #else
         utility::LogError("Unimplemented device.");
 #endif
     } else {
-        MatmulCPU(dtype, A_data, B_data, C_data, m, k, n);
+        MatmulCPU(dtype, lhs_data, rhs_data, dst_data, m, k, n);
     }
 };
 

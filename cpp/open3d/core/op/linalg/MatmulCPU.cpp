@@ -33,9 +33,9 @@ namespace core {
 // CPU converges to
 // https://software.intel.com/content/www/us/en/develop/documentation/mkl-developer-reference-c/top/blas-and-sparse-blas-routines/blas-routines/blas-level-3-routines/cblas-gemm.html
 void MatmulCPU(Dtype dtype,
-               void* A_data,
-               void* B_data,
-               void* C_data,
+               void* lhs_data,
+               void* rhs_data,
+               void* dst_data,
                int m,
                int k,
                int n) {
@@ -46,10 +46,10 @@ void MatmulCPU(Dtype dtype,
             cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                         m, n, k,  // dimensions
                         alpha,
-                        static_cast<const float*>(A_data), k,
-                        static_cast<const float*>(B_data), n,  // input and their leading dims
+                        static_cast<const float*>(lhs_data), k,
+                        static_cast<const float*>(rhs_data), n,  // input and their leading dims
                         beta,
-                        static_cast<float*>(C_data), n);  // output and its leading dim
+                        static_cast<float*>(dst_data), n);  // output and its leading dim
             // clang-format on
             break;
         }
@@ -60,10 +60,10 @@ void MatmulCPU(Dtype dtype,
             cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
                         m, n, k,  // dimensions
                         alpha,
-                        static_cast<const double*>(A_data), k,
-                        static_cast<const double*>(B_data), n,  // input and their leading dims
+                        static_cast<const double*>(lhs_data), k,
+                        static_cast<const double*>(rhs_data), n,  // input and their leading dims
                         beta,
-                        static_cast<double*>(C_data), n);  // output and its leading dim
+                        static_cast<double*>(dst_data), n);  // output and its leading dim
             break;
             // clang-format on
         }

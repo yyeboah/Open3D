@@ -855,7 +855,7 @@ import_3rdparty_library(3rdparty_mkl
     INCLUDE_DIR ${MKL_INCLUDE_DIR}
     LIBRARIES ${MKL_LIBRARIES} # MKL_LIBRARIES are absolute path
 )
-add_dependencies(3rdparty_mkl ext_mkl)
+add_dependencies(3rdparty_mkl ext_mkl_with_include)
 set(MKL_TARGET "3rdparty_mkl")
 list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${MKL_TARGET}")
 

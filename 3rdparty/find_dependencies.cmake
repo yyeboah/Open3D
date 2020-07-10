@@ -848,3 +848,18 @@ if(ENABLE_GUI)
     set(FILAMENT_TARGET "3rdparty_filament")
     list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${FILAMENT_TARGET}")
 endif()
+
+# MKL
+include(${Open3D_3RDPARTY_DIR}/mkl/mkl.cmake)
+import_3rdparty_library(3rdparty_mkl
+    INCLUDE_DIR ${MKL_INCLUDE_DIR}
+    LIBRARIES ${MKL_LIBRARIES} # MKL_LIBRARIES are absolute path
+)
+add_dependencies(3rdparty_mkl ext_mkl)
+set(MKL_TARGET "3rdparty_mkl")
+list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${MKL_TARGET}")
+
+# message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+# find_package(MKL REQUIRED)
+# message(STATUS "MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
+# message(STATUS "MKL_LIBRARIES: ${MKL_LIBRARIES}")

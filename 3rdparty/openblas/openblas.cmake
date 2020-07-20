@@ -7,17 +7,22 @@ ExternalProject_Add(
     GIT_TAG v0.3.10
     UPDATE_COMMAND ""
     CONFIGURE_COMMAND ""
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E rename "libopenblas_nehalemp-r0.3.10.a" "libopenblas.a"
+    INSTALL_COMMAND ""
     # OpenBLAS builds in source directory.
     BUILD_IN_SOURCE True
     # Avoids libopenblas.so, only use libopenblas.a.
-    BUILD_COMMAND make TARGET=NEHALEM NO_SHARED=1
+    # BUILD_COMMAND make TARGET=NEHALEM NO_SHARED=1
+    BUILD_COMMAND ""
 )
 
 ExternalProject_Get_property(ext_openblas SOURCE_DIR)
 set(OPENBLAS_INCLUDE_DIR "${SOURCE_DIR}/") # The "/"" is critical, see import_3rdparty_library.
 set(OPENBLAS_LIB_DIR "${SOURCE_DIR}")
 set(OPENBLAS_LIBRARIES openblas)  # Extended to libopenblas.a automatically.
+
+set(OPENBLAS_INCLUDE_DIR "C:/Users/yixing/Downloads/OpenBLAS-0.3.10-x64/include/")
+set(OPENBLAS_LIB_DIR "C:/Users/yixing/Downloads/OpenBLAS-0.3.10-x64/libwin")
+
 message(STATUS "OPENBLAS_INCLUDE_DIR: ${OPENBLAS_INCLUDE_DIR}")
 message(STATUS "OPENBLAS_LIB_DIR ${OPENBLAS_LIB_DIR}")
 message(STATUS "OPENBLAS_LIBRARIES: ${OPENBLAS_LIBRARIES}")

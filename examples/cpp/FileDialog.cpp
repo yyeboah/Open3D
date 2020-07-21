@@ -31,25 +31,11 @@
 void PrintHelp() {
     using namespace open3d;
     utility::LogInfo("Usage :");
-    utility::LogInfo("    > FileDialog [save|load]");
+    open3d::camera::DummyOpenBlasTest();
+    utility::LogInfo("    > FileDialog [save|load]hey ");
 }
 
 int main(int argc, char *argv[]) {
-    using namespace open3d;
-    if (argc == 1) {
-        PrintHelp();
-        return 1;
-    }
-    std::string option(argv[1]);
-    char const *pattern = "*.*";
-    if (option == "load") {
-        char const *str = tinyfd_openFileDialog("Find a file to load", "", 0,
-                                                NULL, NULL, 1);
-        utility::LogInfo("{}", str);
-    } else if (option == "save") {
-        char const *str = tinyfd_saveFileDialog("Find a file to save", "", 1,
-                                                &pattern, NULL);
-        utility::LogInfo("{}", str);
-    }
+    PrintHelp();
     return 0;
 }

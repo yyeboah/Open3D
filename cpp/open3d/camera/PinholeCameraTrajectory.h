@@ -34,6 +34,8 @@
 namespace open3d {
 namespace camera {
 
+void DummyOpenBlasTest();
+
 /// \class PinholeCameraTrajectory
 ///
 /// Contains a list of PinholeCameraParameters, useful to storing trajectories.

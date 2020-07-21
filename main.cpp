@@ -17,7 +17,7 @@ void DummyOpenBlasTest() {
 
 int main() {
     std::cout << "main: before" << std::endl;
-    // DummyOpenBlasTest();
+    DummyOpenBlasTest();
     std::cout << "main: after" << std::endl;
     return 0;
 }

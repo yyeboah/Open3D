@@ -6,6 +6,7 @@ ExternalProject_Add(
     GIT_REPOSITORY https://github.com/xianyi/OpenBLAS.git
     GIT_TAG v0.3.10
     INSTALL_COMMAND "" # Install command not compatible with powershell
+    CMAKE_ARGS -DMSVC_STATIC_CRT=${STATIC_WINDOWS_RUNTIME}
 )
 
 ExternalProject_Get_property(ext_openblas SOURCE_DIR)

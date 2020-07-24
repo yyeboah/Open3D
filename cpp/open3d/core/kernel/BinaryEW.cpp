@@ -33,7 +33,7 @@
 #include <lapacke.h>
 #endif
 
-#include <cblas.h>
+#include <mkl.h>
 
 #include <cmath>
 #include <vector>

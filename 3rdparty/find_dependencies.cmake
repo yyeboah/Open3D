@@ -877,9 +877,9 @@ endif()
 # MKL
 message(STATUS "Using downloaded MKL for BLAS and LAPACK.")
 set(MKL_TARGET 3rdparty_mkl)
-set(MKL_INCLUDE_DIR "/home/yixing/Documents/mkl_prefix/include/")
-set(MKL_LIB_DIR "/home/yixing/Documents/mkl_prefix/lib")
-set(MKL_LIBRARIES mkl_intel_ilp64 mkl_gnu_thread mkl_core)
+set(MKL_INCLUDE_DIR "/home/yixing/repo/mkl_builder/mkl_prefix/include/")
+set(MKL_LIB_DIR "/home/yixing/repo/mkl_builder/mkl_prefix/lib")
+set(MKL_LIBRARIES mkl_merged)
 import_3rdparty_library(3rdparty_mkl
     INCLUDE_DIRS ${MKL_INCLUDE_DIR}
     LIB_DIR ${MKL_LIB_DIR}

@@ -26,13 +26,6 @@
 
 #include "open3d/core/kernel/BinaryEW.h"
 
-#ifdef _WIN32
-#include <complex>
-#define lapack_complex_float std::complex<float>
-#define lapack_complex_double std::complex<double>
-#include <lapacke.h>
-#endif
-
 #include <mkl.h>
 
 #include <cmath>
@@ -68,7 +61,7 @@ void DummyOpenBlasTest() {
     std::cout << std::endl;
 }
 
-void print_matrix(char* desc, int m, int n, float* a, int lda) {
+void print_matrix(const char* desc, int m, int n, float* a, int lda) {
     int i, j;
     printf("\n %s\n", desc);
     for (i = 0; i < m; i++) {
@@ -77,7 +70,6 @@ void print_matrix(char* desc, int m, int n, float* a, int lda) {
     }
 }
 
-#ifdef _WIN32
 #define M 6
 #define N 5
 #define LDA M
@@ -113,16 +105,13 @@ void DummyLapackTest() {
     /* Print right singular vectors */
     print_matrix("Right singular vectors (stored rowwise)", n, n, vt, ldvt);
 }
-#endif
 
 void BinaryEW(const Tensor& lhs,
               const Tensor& rhs,
               Tensor& dst,
               BinaryEWOpCode op_code) {
     DummyOpenBlasTest();
-#ifdef _WIN32
     DummyLapackTest();
-#endif
 
     // lhs, rhs and dst must be on the same device.
     for (auto device :

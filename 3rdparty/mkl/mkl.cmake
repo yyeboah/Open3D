@@ -62,4 +62,3 @@ set(CMAKE_PREFIX_PATH
     ${ext_mkl_SOURCE_DIR}
     ${ext_mkl_include_SOURCE_DIR}
 )
-include(${CMAKE_MODULE_PATH}/FindMKL.cmake)

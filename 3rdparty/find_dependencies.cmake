@@ -873,3 +873,16 @@ set(OPENBLAS_TARGET "3rdparty_openblas")
 add_dependencies(3rdparty_openblas ext_openblas)
 target_link_libraries(3rdparty_openblas INTERFACE Threads::Threads)
 list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${OPENBLAS_TARGET}")
+
+# MKL
+message(STATUS "Using downloaded MKL for BLAS and LAPACK.")
+include(${Open3D_3RDPARTY_DIR}/mkl/mkl.cmake)
+# include(${CMAKE_MODULE_PATH}/FindMKL.cmake)
+# import_3rdparty_library(3rdparty_mkl
+#     INCLUDE_DIR ${MKL_INCLUDE_DIR}
+#     LIBRARIES ${MKL_LIBRARIES} # MKL_LIBRARIES are absolute path
+# )
+set(MKL_TARGET "3rdparty_mkl")
+message(STATUS "MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
+message(FATAL_ERROR "MKL_LIBRARIES: ${MKL_LIBRARIES}")
+list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${MKL_TARGET}")

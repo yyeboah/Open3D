@@ -3,7 +3,9 @@ include(FetchContent)
 if(WIN32)
     message(FATAL_ERROR "TODO")
 elseif(APPLE)
-    message(FATAL_ERROR "TODO")
+    set(MKL_INCLUDE_DIR "/Users/ylao/repo/mkl-releaser/build/mkl_include/src/ext_mkl_include/include/")
+    set(MKL_LIB_DIR "/Users/ylao/repo/mkl-releaser/build/mkl/src/ext_mkl/lib")
+    set(MKL_LIBRARIES mkl_intel_ilp64 mkl_tbb_thread mkl_core tbb_static)
 else()
     FetchContent_Declare(
         ext_mkl

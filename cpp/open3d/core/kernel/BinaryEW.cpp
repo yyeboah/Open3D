@@ -26,12 +26,10 @@
 
 #include "open3d/core/kernel/BinaryEW.h"
 
-// #if defined(__APPLE__)
 // #include <cblas.h>
 // #include <lapacke.h>
-// #else
+
 #include <mkl.h>
-// #endif
 
 #include <cmath>
 #include <vector>

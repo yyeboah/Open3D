@@ -876,16 +876,14 @@ endif()
 
 # MKL
 message(STATUS "Using downloaded MKL for BLAS and LAPACK.")
-set(MKL_TARGET 3rdparty_mkl)
-set(MKL_INCLUDE_DIR "/home/yixing/repo/mkl_builder/mkl_prefix/include/")
-set(MKL_LIB_DIR "/home/yixing/repo/mkl_builder/mkl_prefix/lib")
-set(MKL_LIBRARIES mkl_merged)
+include(${Open3D_3RDPARTY_DIR}/mkl/mkl.cmake)
 import_3rdparty_library(3rdparty_mkl
     INCLUDE_DIRS ${MKL_INCLUDE_DIR}
     LIB_DIR ${MKL_LIB_DIR}
     LIBRARIES ${MKL_LIBRARIES}
 )
-# target_link_libraries(3rdparty_mkl INTERFACE Threads::Threads)
+set(MKL_TARGET "3rdparty_mkl")
+add_dependencies(3rdparty_mkl ext_mkl)
 message(STATUS "MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
 message(STATUS "MKL_LIB_DIR: ${MKL_LIB_DIR}")
 message(STATUS "MKL_LIBRARIES: ${MKL_LIBRARIES}")

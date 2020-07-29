@@ -861,7 +861,7 @@ if(ENABLE_GUI)
     list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${FILAMENT_TARGET}")
 endif()
 
-if(APPLE)
+if(OFF)
     # OpenBLAS
     message(STATUS "Building OpenBLAS from source")
     include(${Open3D_3RDPARTY_DIR}/mkl/openblas.cmake)

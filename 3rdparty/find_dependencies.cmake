@@ -861,34 +861,19 @@ if(ENABLE_GUI)
     list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${FILAMENT_TARGET}")
 endif()
 
-if(OFF)
-    # OpenBLAS
-    message(STATUS "Building OpenBLAS from source")
-    include(${Open3D_3RDPARTY_DIR}/mkl/openblas.cmake)
-    import_3rdparty_library(3rdparty_openblas
-        INCLUDE_DIRS ${OPENBLAS_INCLUDE_DIR}
-        LIB_DIR ${OPENBLAS_LIB_DIR}
-        LIBRARIES ${OPENBLAS_LIBRARIES}
-    )
-    set(OPENBLAS_TARGET "3rdparty_openblas")
-    add_dependencies(3rdparty_openblas ext_openblas)
-    target_link_libraries(3rdparty_openblas INTERFACE Threads::Threads)
-    list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${OPENBLAS_TARGET}")
-else()
-    # MKL
-    message(STATUS "Using downloaded MKL for BLAS and LAPACK.")
-    include(${Open3D_3RDPARTY_DIR}/mkl/mkl.cmake)
-    import_3rdparty_library(3rdparty_mkl
-        INCLUDE_DIRS ${MKL_INCLUDE_DIR}
-        LIB_DIR ${MKL_LIB_DIR}
-        LIBRARIES ${MKL_LIBRARIES}
-    )
-    set(MKL_TARGET "3rdparty_mkl")
-    add_dependencies(3rdparty_mkl ext_mkl)
-    message(STATUS "MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
-    message(STATUS "MKL_LIB_DIR: ${MKL_LIB_DIR}")
-    message(STATUS "MKL_LIBRARIES: ${MKL_LIBRARIES}")
-    target_link_libraries(3rdparty_mkl INTERFACE Threads::Threads)
-    target_compile_options(3rdparty_mkl INTERFACE "-DMKL_ILP64 -m64")
-    list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${MKL_TARGET}")
-endif()
+# MKL
+message(STATUS "Using downloaded MKL for BLAS and LAPACK.")
+include(${Open3D_3RDPARTY_DIR}/mkl/mkl.cmake)
+import_3rdparty_library(3rdparty_mkl
+    INCLUDE_DIRS ${MKL_INCLUDE_DIR}
+    LIB_DIR ${MKL_LIB_DIR}
+    LIBRARIES ${MKL_LIBRARIES}
+)
+set(MKL_TARGET "3rdparty_mkl")
+add_dependencies(3rdparty_mkl ext_mkl)
+message(STATUS "MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
+message(STATUS "MKL_LIB_DIR: ${MKL_LIB_DIR}")
+message(STATUS "MKL_LIBRARIES: ${MKL_LIBRARIES}")
+target_link_libraries(3rdparty_mkl INTERFACE Threads::Threads)
+target_compile_options(3rdparty_mkl INTERFACE "-DMKL_ILP64 -m64")
+list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${MKL_TARGET}")

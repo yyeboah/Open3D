@@ -861,21 +861,6 @@ if(ENABLE_GUI)
     list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${FILAMENT_TARGET}")
 endif()
 
-# TBB
-message(STATUS "Compileing TBB from source.")
-include(${Open3D_3RDPARTY_DIR}/tbb/tbb.cmake)
-import_3rdparty_library(3rdparty_tbb
-    INCLUDE_DIRS ${TBB_INCLUDE_DIR}
-    LIB_DIR ${TBB_LIB_DIR}
-    LIBRARIES ${TBB_LIBRARIES}
-)
-set(TBB_TARGET "3rdparty_tbb")
-add_dependencies(3rdparty_tbb ext_tbb)
-message(STATUS "TBB_INCLUDE_DIR: ${TBB_INCLUDE_DIR}")
-message(STATUS "TBB_LIB_DIR: ${TBB_LIB_DIR}")
-message(STATUS "TBB_LIBRARIES: ${TBB_LIBRARIES}")
-list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${TBB_TARGET}")
-
 # MKL
 # https://software.intel.com/content/www/us/en/develop/articles/intel-mkl-link-line-advisor.html
 message(STATUS "Using MKL to support BLAS and LAPACK functionalities.")
@@ -886,7 +871,7 @@ import_3rdparty_library(3rdparty_mkl
     LIBRARIES ${MKL_LIBRARIES}
 )
 set(MKL_TARGET "3rdparty_mkl")
-add_dependencies(3rdparty_mkl ext_mkl ext_mkl_include)
+add_dependencies(3rdparty_mkl ext_mkl)
 message(STATUS "MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
 message(STATUS "MKL_LIB_DIR: ${MKL_LIB_DIR}")
 message(STATUS "MKL_LIBRARIES: ${MKL_LIBRARIES}")

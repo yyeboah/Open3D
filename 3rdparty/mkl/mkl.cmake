@@ -1,32 +1,34 @@
 include(ExternalProject)
 
+set(MKL_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/mkl_install)
+
+# We need to put TBB right next to MKL in the link flags. So instead of creating
+# a new tbb.cmake, it is also put here.
+ExternalProject_Add(
+    ext_tbb
+    PREFIX tbb
+    GIT_REPOSITORY https://github.com/wjakob/tbb.git
+    GIT_TAG 806df70ee69fc7b332fcf90a48651f6dbf0663ba # July 2020
+    UPDATE_COMMAND ""
+    CMAKE_ARGS
+        -DCMAKE_INSTALL_PREFIX=${MKL_INSTALL_PREFIX}
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+)
+
 if(WIN32)
-    set(MKL_URL         "https://anaconda.org/intel/mkl-static/2020.1/download/win-64/mkl-static-2020.1-intel_216.tar.bz2")
     set(MKL_INCLUDE_URL "https://anaconda.org/intel/mkl-include/2020.1/download/win-64/mkl-include-2020.1-intel_216.tar.bz2")
+    set(MKL_URL         "https://anaconda.org/intel/mkl-static/2020.1/download/win-64/mkl-static-2020.1-intel_216.tar.bz2")
 elseif(APPLE)
-    set(MKL_URL           "https://anaconda.org/intel/mkl-static/2020.1/download/osx-64/mkl-static-2020.1-intel_216.tar.bz2")
     set(MKL_INCLUDE_URL   "https://anaconda.org/intel/mkl-include/2020.1/download/osx-64/mkl-include-2020.1-intel_216.tar.bz2")
+    set(MKL_URL           "https://anaconda.org/intel/mkl-static/2020.1/download/osx-64/mkl-static-2020.1-intel_216.tar.bz2")
 else()
-    set(MKL_URL           "https://anaconda.org/intel/mkl-static/2020.1/download/linux-64/mkl-static-2020.1-intel_217.tar.bz2")
     set(MKL_INCLUDE_URL   "https://anaconda.org/intel/mkl-include/2020.1/download/linux-64/mkl-include-2020.1-intel_217.tar.bz2")
+    set(MKL_URL           "https://anaconda.org/intel/mkl-static/2020.1/download/linux-64/mkl-static-2020.1-intel_217.tar.bz2")
 endif()
 
 if(WIN32)
     message(FATAL_ERROR "TODO")
 elseif(APPLE)
-    ExternalProject_Add(
-        ext_mkl
-        PREFIX mkl
-        URL ${MKL_URL}
-        UPDATE_COMMAND ""
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ""
-        INSTALL_COMMAND ""
-    )
-    ExternalProject_Get_property(ext_mkl SOURCE_DIR)
-    set(MKL_LIB_DIR "${SOURCE_DIR}/lib")
-    set(MKL_LIBRARIES mkl_intel_ilp64 mkl_tbb_thread mkl_core)
-
     ExternalProject_Add(
         ext_mkl_include
         PREFIX mkl_include
@@ -34,10 +36,20 @@ elseif(APPLE)
         UPDATE_COMMAND ""
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
-        INSTALL_COMMAND ""
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/include ${MKL_INSTALL_PREFIX}/include
     )
-    ExternalProject_Get_property(ext_mkl_include SOURCE_DIR)
-    set(MKL_INCLUDE_DIR "${SOURCE_DIR}/include/")
+    ExternalProject_Add(
+        ext_mkl
+        PREFIX mkl
+        URL ${MKL_URL}
+        UPDATE_COMMAND ""
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/lib ${MKL_INSTALL_PREFIX}/lib
+    )
+    set(MKL_INCLUDE_DIR "${MKL_INSTALL_PREFIX}/include/")
+    set(MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
+    set(MKL_LIBRARIES mkl_intel_ilp64 mkl_tbb_thread mkl_core tbb_static)
 else()
     # Resolving static library circular dependencies.
     # - Approach 1: Add `-Wl,--start-group` `-Wl,--end-group` around, but this
@@ -54,6 +66,15 @@ else()
     #               time is required to merge the libraries and the merged
     #               library size can be large. We choose to use approach 3.
     ExternalProject_Add(
+        ext_mkl_include
+        PREFIX mkl_include
+        URL ${MKL_INCLUDE_URL}
+        UPDATE_COMMAND ""
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/include ${MKL_INSTALL_PREFIX}/include
+    )
+    ExternalProject_Add(
         ext_mkl
         PREFIX mkl
         URL ${MKL_URL}
@@ -68,21 +89,12 @@ else()
         COMMAND bash -c "ar -qc lib/libmkl_merged.a *.o"
         COMMAND echo "Cleaning up *.o files..."
         COMMAND bash -c "rm *.o"
-        INSTALL_COMMAND ""
+        INSTALL_COMMAND ${CMAKE_COMMAND} -E copy lib/libmkl_merged.a ${MKL_INSTALL_PREFIX}/lib/libmkl_merged.a
     )
-    ExternalProject_Get_property(ext_mkl SOURCE_DIR)
-    set(MKL_LIB_DIR "${SOURCE_DIR}/lib")
+    set(MKL_INCLUDE_DIR "${MKL_INSTALL_PREFIX}/include/")
+    set(MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
     set(MKL_LIBRARIES mkl_merged tbb_static)
-
-    ExternalProject_Add(
-        ext_mkl_include
-        PREFIX mkl_include
-        URL ${MKL_INCLUDE_URL}
-        UPDATE_COMMAND ""
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ""
-        INSTALL_COMMAND ""
-    )
-    ExternalProject_Get_property(ext_mkl_include SOURCE_DIR)
-    set(MKL_INCLUDE_DIR "${SOURCE_DIR}/include/")
 endif()
+
+add_dependencies(ext_mkl ext_mkl_include)
+add_dependencies(ext_mkl_include ext_tbb)

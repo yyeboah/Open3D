@@ -14,7 +14,6 @@ torch::Tensor ReduceSubarraysSumCUDA(torch::Tensor values,
 
     auto stream = at::cuda::getCurrentCUDAStream();
     auto cuda_device_props = at::cuda::getCurrentDeviceProperties();
-    const int texture_alignment = cuda_device_props->textureAlignment;
 
     open3d::ml::impl::ReduceSubarraysSumCUDA(
             stream, values.data_ptr<T>(), values.size(0),

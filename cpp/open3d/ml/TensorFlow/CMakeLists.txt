@@ -55,6 +55,12 @@ endif()
 
 target_compile_definitions(open3d_tf_ops PRIVATE "${open3d_tf_ops_DEFINITIONS}")
 
+message(STATUS "TBB_INCLUDE_DIR: ${TBB_INCLUDE_DIR"}
+message(STATUS "TBB_LIB_DIR: ${TBB_LIB_DIR"}
+message(STATUS "TBB_LIBRARIES: ${TBB_LIBRARIES"}
+message(STATUS "TBB_LIBRARY: ${TBB_LIBRARY"}
+message(STATUS "TBB_MALLOC_LIBRARY: ${TBB_MALLOC_LIBRARY"}
+
 # Silence warnings caused by tensorflow's Eigen. Travis has a different version
 # of protobuf in /usr/local/include TBB is in /usr/local/include, so it needs to
 # be after Tensorflow

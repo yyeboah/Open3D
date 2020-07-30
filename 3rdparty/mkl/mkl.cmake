@@ -95,6 +95,3 @@ else()
     set(MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
     set(MKL_LIBRARIES mkl_merged tbb_static)
 endif()
-
-add_dependencies(ext_mkl ext_mkl_include)
-add_dependencies(ext_mkl_include ext_tbb)

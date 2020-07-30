@@ -1,3 +1,11 @@
+# This scripts exports:
+# - STATIC_MKL_INCLUDE_DIR
+# - STATIC_MKL_LIB_DIR
+# - STATIC_MKL_LIBRARIES
+#
+# The name "STATIC" is used to avoid naming collisions for other 3rdparty CMake
+# files (e.g. PyTorch) that also depends on MKL.
+
 include(ExternalProject)
 
 set(MKL_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/mkl_install)
@@ -51,9 +59,9 @@ elseif(APPLE)
         BUILD_COMMAND ""
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/lib ${MKL_INSTALL_PREFIX}/lib
     )
-    set(MKL_INCLUDE_DIR "${MKL_INSTALL_PREFIX}/include/")
-    set(MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
-    set(MKL_LIBRARIES mkl_intel_ilp64 mkl_tbb_thread mkl_core tbb_static)
+    set(STATIC_MKL_INCLUDE_DIR "${MKL_INSTALL_PREFIX}/include/")
+    set(STATIC_MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
+    set(STATIC_MKL_LIBRARIES mkl_intel_ilp64 mkl_tbb_thread mkl_core tbb_static)
 else()
     # Resolving static library circular dependencies.
     # - Approach 1: Add `-Wl,--start-group` `-Wl,--end-group` around, but this
@@ -95,7 +103,7 @@ else()
         COMMAND bash -c "rm *.o"
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy lib/libmkl_merged.a ${MKL_INSTALL_PREFIX}/lib/libmkl_merged.a
     )
-    set(MKL_INCLUDE_DIR "${MKL_INSTALL_PREFIX}/include/")
-    set(MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
-    set(MKL_LIBRARIES mkl_merged tbb_static)
+    set(STATIC_MKL_INCLUDE_DIR "${MKL_INSTALL_PREFIX}/include/")
+    set(STATIC_MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
+    set(STATIC_MKL_LIBRARIES mkl_merged tbb_static)
 endif()

@@ -866,15 +866,15 @@ endif()
 message(STATUS "Using MKL to support BLAS and LAPACK functionalities.")
 include(${Open3D_3RDPARTY_DIR}/mkl/mkl.cmake)
 import_3rdparty_library(3rdparty_mkl
-    INCLUDE_DIRS ${MKL_INCLUDE_DIR}
-    LIB_DIR ${MKL_LIB_DIR}
-    LIBRARIES ${MKL_LIBRARIES}
+    INCLUDE_DIRS ${STATIC_MKL_INCLUDE_DIR}
+    LIB_DIR      ${STATIC_MKL_LIB_DIR}
+    LIBRARIES    ${STATIC_MKL_LIBRARIES}
 )
 set(MKL_TARGET "3rdparty_mkl")
 add_dependencies(3rdparty_mkl ext_tbb ext_mkl_include ext_mkl)
-message(STATUS "MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
-message(STATUS "MKL_LIB_DIR: ${MKL_LIB_DIR}")
-message(STATUS "MKL_LIBRARIES: ${MKL_LIBRARIES}")
+message(STATUS "STATIC_MKL_INCLUDE_DIR: ${STATIC_MKL_INCLUDE_DIR}")
+message(STATUS "STATIC_MKL_LIB_DIR: ${STATIC_MKL_LIB_DIR}")
+message(STATUS "STATIC_MKL_LIBRARIES: ${STATIC_MKL_LIBRARIES}")
 target_link_libraries(3rdparty_mkl INTERFACE Threads::Threads)
 if(UNIX)
     target_compile_options(3rdparty_mkl INTERFACE "-DMKL_ILP64 -m64")

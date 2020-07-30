@@ -886,7 +886,7 @@ import_3rdparty_library(3rdparty_mkl
     LIBRARIES ${MKL_LIBRARIES}
 )
 set(MKL_TARGET "3rdparty_mkl")
-add_dependencies(3rdparty_mkl 3rdparty_tbb ext_mkl ext_mkl_include)
+add_dependencies(3rdparty_mkl ext_mkl ext_mkl_include)
 message(STATUS "MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
 message(STATUS "MKL_LIB_DIR: ${MKL_LIB_DIR}")
 message(STATUS "MKL_LIBRARIES: ${MKL_LIBRARIES}")

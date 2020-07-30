@@ -72,7 +72,7 @@ else()
     )
     ExternalProject_Get_property(ext_mkl SOURCE_DIR)
     set(MKL_LIB_DIR "${SOURCE_DIR}/lib")
-    set(MKL_LIBRARIES mkl_merged)
+    set(MKL_LIBRARIES mkl_merged tbb_static)
 
     ExternalProject_Add(
         ext_mkl_include

@@ -49,7 +49,7 @@ const std::unordered_set<BinaryEWOpCode, utility::hash_enum_class>
         };
 
 void DummyOpenBlasTest() {
-    int i = 0;
+    int64_t i = 0;
     double A[6] = {1.0, 2.0, 1.0, -3.0, 4.0, -1.0};
     double B[6] = {1.0, 2.0, 1.0, -3.0, 4.0, -1.0};
     double C[9] = {.5, .5, .5, .5, .5, .5, .5, .5, .5};
@@ -61,8 +61,9 @@ void DummyOpenBlasTest() {
     std::cout << std::endl;
 }
 
-void print_matrix(const char* desc, int m, int n, float* a, int lda) {
-    int i, j;
+void print_matrix(
+        const char* desc, int64_t m, int64_t n, float* a, int64_t lda) {
+    int64_t i, j;
     printf("\n %s\n", desc);
     for (i = 0; i < m; i++) {
         for (j = 0; j < n; j++) printf(" %6.2f", a[i + j * lda]);
@@ -78,7 +79,7 @@ void print_matrix(const char* desc, int m, int n, float* a, int lda) {
 
 void DummyLapackTest() {
     /* Locals */
-    int m = M, n = N, lda = LDA, ldu = LDU, ldvt = LDVT, info;
+    int64_t m = M, n = N, lda = LDA, ldu = LDU, ldvt = LDVT, info;
     float superb[std::min(M, N) - 1];
     /* Local arrays */
     float s[N], u[LDU * M], vt[LDVT * N];

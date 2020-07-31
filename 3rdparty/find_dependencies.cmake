@@ -879,8 +879,23 @@ message(STATUS "Using downloaded MKL for BLAS and LAPACK.")
 set(MKL_TARGET 3rdparty_mkl)
 set(MKL_INCLUDE_DIR "C:/Users/yixing/repo/mkl-releaser/build/mkl/src/ext_mkl/Library/include/")
 set(MKL_LIB_DIR "C:/Users/yixing/repo/mkl-releaser/build/mkl/src/ext_mkl/Library/lib")
-set(MKL_LIBRARIES mkl_intel_ilp64 mkl_sequential mkl_core)
+# set(MKL_LIBRARIES mkl_intel_ilp64 mkl_sequential mkl_core)
 # set(MKL_LIBRARIES mkl_intel_ilp64 mkl_tbb_thread mkl_core tbb)
+
+# Generator expression can result in an empty string "", causing CMake to try to
+# locat ".lib". The workaround to first list all libs, and remove unneeded items
+# using generator expressions.
+set(MKL_LIBRARIES
+    mkl_intel_ilp64
+    mkl_core
+    mkl_sequential
+    mkl_tbb_thread
+    tbb
+)
+list(REMOVE_ITEM MKL_LIBRARIES "$<$<CONFIG:Debug>:mkl_tbb_thread>")
+list(REMOVE_ITEM MKL_LIBRARIES "$<$<CONFIG:Debug>:tbb>")
+list(REMOVE_ITEM MKL_LIBRARIES "$<$<CONFIG:Release>:mkl_sequential>")
+
 import_3rdparty_library(3rdparty_mkl
     INCLUDE_DIRS ${MKL_INCLUDE_DIR}
     LIB_DIR ${MKL_LIB_DIR}

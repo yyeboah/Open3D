@@ -36,6 +36,8 @@ namespace open3d {
 namespace core {
 namespace kernel {
 
+void RunBlasLapackSample();
+
 enum class BinaryEWOpCode {
     Add,
     Sub,

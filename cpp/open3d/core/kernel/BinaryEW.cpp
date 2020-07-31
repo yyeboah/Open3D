@@ -106,13 +106,15 @@ void DummyLapackTest() {
     print_matrix("Right singular vectors (stored rowwise)", n, n, vt, ldvt);
 }
 
+void RunBlasLapackSample() {
+    DummyOpenBlasTest();
+    DummyLapackTest();
+}
+
 void BinaryEW(const Tensor& lhs,
               const Tensor& rhs,
               Tensor& dst,
               BinaryEWOpCode op_code) {
-    DummyOpenBlasTest();
-    DummyLapackTest();
-
     // lhs, rhs and dst must be on the same device.
     for (auto device :
          std::vector<Device>({rhs.GetDevice(), dst.GetDevice()})) {

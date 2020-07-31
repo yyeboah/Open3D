@@ -25,7 +25,6 @@
 // ----------------------------------------------------------------------------
 
 #include "pybind/core/core.h"
-
 #include "pybind/open3d_pybind.h"
 
 namespace open3d {

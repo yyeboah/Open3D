@@ -877,15 +877,15 @@ endif()
 # MKL
 message(STATUS "Using downloaded MKL for BLAS and LAPACK.")
 set(MKL_TARGET 3rdparty_mkl)
-set(MKL_INCLUDE_DIR "/home/yixing/repo/mkl_builder/mkl_prefix/include/")
-set(MKL_LIB_DIR "/home/yixing/repo/mkl_builder/mkl_prefix/lib")
-set(MKL_LIBRARIES mkl_merged)
+set(MKL_INCLUDE_DIR "C:/Users/yixing/repo/mkl-releaser/build/mkl/src/ext_mkl/Library/include/")
+set(MKL_LIB_DIR "C:/Users/yixing/repo/mkl-releaser/build/mkl/src/ext_mkl/Library/lib")
+set(MKL_LIBRARIES mkl_intel_ilp64 mkl_tbb_thread mkl_core tbb)
 import_3rdparty_library(3rdparty_mkl
     INCLUDE_DIRS ${MKL_INCLUDE_DIR}
     LIB_DIR ${MKL_LIB_DIR}
     LIBRARIES ${MKL_LIBRARIES}
 )
-# target_link_libraries(3rdparty_mkl INTERFACE Threads::Threads)
+target_link_libraries(3rdparty_mkl INTERFACE Threads::Threads)
 message(STATUS "MKL_INCLUDE_DIR: ${MKL_INCLUDE_DIR}")
 message(STATUS "MKL_LIB_DIR: ${MKL_LIB_DIR}")
 message(STATUS "MKL_LIBRARIES: ${MKL_LIBRARIES}")

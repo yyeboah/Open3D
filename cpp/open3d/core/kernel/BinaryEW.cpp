@@ -26,9 +26,6 @@
 
 #include "open3d/core/kernel/BinaryEW.h"
 
-// #include <cblas.h>
-// #include <lapacke.h>
-
 #include <mkl.h>
 
 #include <cmath>
@@ -51,17 +48,14 @@ const std::unordered_set<BinaryEWOpCode, utility::hash_enum_class>
                 BinaryEWOpCode::Ne,
         };
 
-void DummyOpenBlasTest() {
+void TestBlas() {
     int64_t i = 0;
-    double A[6] = {1.0, 2.0, 1.0, -3.0, 4.0, -1.0};
-    double B[6] = {1.0, 2.0, 1.0, -3.0, 4.0, -1.0};
-    double C[9] = {.5, .5, .5, .5, .5, .5, .5, .5, .5};
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 2, 1, A, 3, B, 3,
-                2, C, 3);
-    for (i = 0; i < 9; i++) {
-        std::cout << C[i] << " ";
-    }
-    std::cout << std::endl;
+    std::vector<double> A{1.0, 2.0, 1.0, -3.0, 4.0, -1.0};
+    std::vector<double> B{1.0, 2.0, 1.0, -3.0, 4.0, -1.0};
+    std::vector<double> C{0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 2, 1, A.data(),
+                3, B.data(), 3, 2, C.data(), 3);
+    std::cout << "TestBlas done" << std::endl;
 }
 
 void print_matrix(
@@ -74,48 +68,43 @@ void print_matrix(
     }
 }
 
-#define M 6
-#define N 5
-#define LDA M
-#define LDU M
-#define LDVT N
-
-void DummyLapackTest() {
-    /* Locals */
-    int64_t m = M, n = N, lda = LDA, ldu = LDU, ldvt = LDVT, info;
-    float superb[std::min(M, N) - 1];
-    /* Local arrays */
-    float s[N], u[LDU * M], vt[LDVT * N];
-    float a[LDA * N] = {8.79f, 6.11f,  -9.15f, 9.57f, -3.49f, 9.84f,
-                        9.93f, 6.91f,  -7.93f, 1.64f, 4.02f,  0.15f,
-                        9.83f, 5.04f,  4.86f,  8.83f, 9.80f,  -8.99f,
-                        5.45f, -0.27f, 4.85f,  0.74f, 10.00f, -6.02f,
-                        3.16f, 7.98f,  3.01f,  5.80f, 4.27f,  -5.31f};
-    /* Executable statements */
+void TestLapack() {
+    int64_t m = 6;
+    int64_t n = 5;
+    int64_t lda = m;
+    int64_t ldu = m;
+    int64_t ldvt = n;
+    std::vector<float> superb(std::min(m, n) - 1);
+    std::vector<float> s(n);
+    std::vector<float> u(ldu * m);
+    std::vector<float> vt(ldvt * n);
+    std::vector<float> a{8.79f, 6.11f,  -9.15f, 9.57f, -3.49f, 9.84f,
+                         9.93f, 6.91f,  -7.93f, 1.64f, 4.02f,  0.15f,
+                         9.83f, 5.04f,  4.86f,  8.83f, 9.80f,  -8.99f,
+                         5.45f, -0.27f, 4.85f,  0.74f, 10.00f, -6.02f,
+                         3.16f, 7.98f,  3.01f,  5.80f, 4.27f,  -5.31f};
     printf("LAPACKE_sgesvd (column-major, high-level) Example Program "
            "Results\n");
-    /* Compute SVD */
-    info = LAPACKE_sgesvd(LAPACK_COL_MAJOR, 'A', 'A', m, n, a, lda, s, u, ldu,
-                          vt, ldvt, superb);
-    /* Check for convergence */
+    int64_t info = LAPACKE_sgesvd(LAPACK_COL_MAJOR, 'A', 'A', m, n, a.data(),
+                                  lda, s.data(), u.data(), ldu, vt.data(), ldvt,
+                                  superb.data());
     if (info > 0) {
         printf("The algorithm computing SVD failed to converge.\n");
         exit(1);
     }
-    /* Print singular values */
-    print_matrix("Singular values", 1, n, s, 1);
-    /* Print left singular vectors */
-    print_matrix("Left singular vectors (stored columnwise)", m, n, u, ldu);
-    /* Print right singular vectors */
-    print_matrix("Right singular vectors (stored rowwise)", n, n, vt, ldvt);
+    print_matrix("Singular values", 1, n, s.data(), 1);
+    print_matrix("Left singular vectors (stored columnwise)", m, n, u.data(),
+                 ldu);
+    print_matrix("Right singular vectors (stored rowwise)", n, n, vt.data(),
+                 ldvt);
 }
 
 void BinaryEW(const Tensor& lhs,
               const Tensor& rhs,
               Tensor& dst,
               BinaryEWOpCode op_code) {
-    DummyOpenBlasTest();
-    DummyLapackTest();
+    TestBlas();
+    TestLapack();
 
     // lhs, rhs and dst must be on the same device.
     for (auto device :

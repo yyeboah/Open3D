@@ -862,6 +862,7 @@ if(ENABLE_GUI)
 endif()
 
 # MKL
+# We link MKL statically. For MKL link flags, refer to:
 # https://software.intel.com/content/www/us/en/develop/articles/intel-mkl-link-line-advisor.html
 message(STATUS "Using MKL to support BLAS and LAPACK functionalities.")
 include(${Open3D_3RDPARTY_DIR}/mkl/mkl.cmake)

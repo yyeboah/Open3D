@@ -33,7 +33,7 @@ jobs:
     - name: Build
       run: |
         cd build
-        cmake --build . --config ${{ matrix.config }} --target INSTALL
+        cmake --build . --parallel 2 --config ${{ matrix.config }} --target INSTALL
     - name: Linking to Open3D
       run: |
         cd docs\_static\C++
@@ -46,5 +46,4 @@ jobs:
         cmake --build . --config ${{ matrix.config }} --target install-pip-package
         python -c "import open3d; print(open3d)"
         python -c "import open3d; open3d.pybind.core.kernel.test_mkl_integration()"
-      if: matrix.shared == OFF  # If shred == ON, Open3D.dll needs to be copied.
-
+      if: matrix.shared == OFF # If shred == ON, Open3D.dll needs to be copied.

@@ -316,8 +316,6 @@ function(open3d_set_global_properties target)
             # https://stackoverflow.com/questions/36633074/set-the-number-of-threads-in-a-cmake-build
             # Option 2, at configure time: add /MP flag, no need to use Option 1
             # https://docs.microsoft.com/en-us/cpp/build/reference/mp-build-with-multiple-processes?view=vs-2019
-            # Don't do both. Option 2 is selected here, see
-            # https://blog.kitware.com/cmake-building-with-all-your-cores/
             target_compile_options(${target} PRIVATE /MP)
             if(COMMAND target_link_options)
                 if(ENABLE_GUI)

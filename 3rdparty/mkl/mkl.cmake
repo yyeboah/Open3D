@@ -1,3 +1,5 @@
+# MKL and TBB build scripts.
+#
 # This scripts exports:
 # - STATIC_MKL_INCLUDE_DIR
 # - STATIC_MKL_LIB_DIR
@@ -8,10 +10,24 @@
 
 include(ExternalProject)
 
-set(MKL_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/mkl_install)
+if(WIN32)
+    set(MKL_INCLUDE_URL "https://anaconda.org/intel/mkl-include/2020.1/download/win-64/mkl-include-2020.1-intel_216.tar.bz2")
+    set(MKL_URL         "https://anaconda.org/intel/mkl-static/2020.1/download/win-64/mkl-static-2020.1-intel_216.tar.bz2")
+elseif(APPLE)
+    set(MKL_INCLUDE_URL   "https://anaconda.org/intel/mkl-include/2020.1/download/osx-64/mkl-include-2020.1-intel_216.tar.bz2")
+    set(MKL_URL           "https://anaconda.org/intel/mkl-static/2020.1/download/osx-64/mkl-static-2020.1-intel_216.tar.bz2")
+else()
+    set(MKL_INCLUDE_URL   "https://anaconda.org/intel/mkl-include/2020.1/download/linux-64/mkl-include-2020.1-intel_217.tar.bz2")
+    set(MKL_URL           "https://anaconda.org/intel/mkl-static/2020.1/download/linux-64/mkl-static-2020.1-intel_217.tar.bz2")
+endif()
 
-# We need to put TBB right next to MKL in the link flags. So instead of creating
-# a new tbb.cmake, it is also put here.
+# Where MKL and TBB headers and libs will be installed.
+set(MKL_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/mkl_install)
+set(STATIC_MKL_INCLUDE_DIR "${MKL_INSTALL_PREFIX}/include/")
+set(STATIC_MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
+
+# Need to put TBB right next to MKL in the link flags. So instead of creating a
+# new tbb.cmake, it is also put here.
 ExternalProject_Add(
     ext_tbb
     PREFIX tbb
@@ -27,17 +43,6 @@ ExternalProject_Add(
         -DTBB_BUILD_TESTS=OFF
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 )
-
-if(WIN32)
-    set(MKL_INCLUDE_URL "https://anaconda.org/intel/mkl-include/2020.1/download/win-64/mkl-include-2020.1-intel_216.tar.bz2")
-    set(MKL_URL         "https://anaconda.org/intel/mkl-static/2020.1/download/win-64/mkl-static-2020.1-intel_216.tar.bz2")
-elseif(APPLE)
-    set(MKL_INCLUDE_URL   "https://anaconda.org/intel/mkl-include/2020.1/download/osx-64/mkl-include-2020.1-intel_216.tar.bz2")
-    set(MKL_URL           "https://anaconda.org/intel/mkl-static/2020.1/download/osx-64/mkl-static-2020.1-intel_216.tar.bz2")
-else()
-    set(MKL_INCLUDE_URL   "https://anaconda.org/intel/mkl-include/2020.1/download/linux-64/mkl-include-2020.1-intel_217.tar.bz2")
-    set(MKL_URL           "https://anaconda.org/intel/mkl-static/2020.1/download/linux-64/mkl-static-2020.1-intel_217.tar.bz2")
-endif()
 
 if(WIN32)
     ExternalProject_Add(
@@ -58,8 +63,6 @@ if(WIN32)
         BUILD_COMMAND ""
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/Library/lib ${MKL_INSTALL_PREFIX}/lib
     )
-    set(STATIC_MKL_INCLUDE_DIR "${MKL_INSTALL_PREFIX}/include/")
-    set(STATIC_MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
     # Generator expression can result in an empty string "", causing CMake to try to
     # locat ".lib". The workaround to first list all libs, and remove unneeded items
     # using generator expressions.
@@ -92,8 +95,6 @@ elseif(APPLE)
         BUILD_COMMAND ""
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/lib ${MKL_INSTALL_PREFIX}/lib
     )
-    set(STATIC_MKL_INCLUDE_DIR "${MKL_INSTALL_PREFIX}/include/")
-    set(STATIC_MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
     set(STATIC_MKL_LIBRARIES mkl_intel_ilp64 mkl_tbb_thread mkl_core tbb_static)
 else()
     # Resolving static library circular dependencies.
@@ -136,7 +137,5 @@ else()
         COMMAND bash -c "rm *.o"
         INSTALL_COMMAND ${CMAKE_COMMAND} -E copy lib/libmkl_merged.a ${MKL_INSTALL_PREFIX}/lib/libmkl_merged.a
     )
-    set(STATIC_MKL_INCLUDE_DIR "${MKL_INSTALL_PREFIX}/include/")
-    set(STATIC_MKL_LIB_DIR "${MKL_INSTALL_PREFIX}/lib")
     set(STATIC_MKL_LIBRARIES mkl_merged tbb_static)
 endif()

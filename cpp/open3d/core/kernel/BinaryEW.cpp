@@ -26,6 +26,8 @@
 
 #include "open3d/core/kernel/BinaryEW.h"
 
+#include <vector>
+
 #include "open3d/core/ShapeUtil.h"
 #include "open3d/core/Tensor.h"
 #include "open3d/utility/Console.h"

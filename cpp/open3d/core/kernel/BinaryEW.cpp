@@ -48,7 +48,8 @@ const std::unordered_set<BinaryEWOpCode, utility::hash_enum_class>
                 BinaryEWOpCode::Ne,
         };
 
-void TestBlas() {
+void TestMKL() {
+    // Blas
     int64_t i = 0;
     std::vector<double> A{1.0, 2.0, 1.0, -3.0, 4.0, -1.0};
     std::vector<double> B{1.0, 2.0, 1.0, -3.0, 4.0, -1.0};
@@ -56,19 +57,8 @@ void TestBlas() {
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 2, 1, A.data(),
                 3, B.data(), 3, 2, C.data(), 3);
     std::cout << "TestBlas done" << std::endl;
-}
 
-void print_matrix(
-        const char* desc, int64_t m, int64_t n, float* a, int64_t lda) {
-    int64_t i, j;
-    printf("\n %s\n", desc);
-    for (i = 0; i < m; i++) {
-        for (j = 0; j < n; j++) printf(" %6.2f", a[i + j * lda]);
-        printf("\n");
-    }
-}
-
-void TestLapack() {
+    // Lapack
     int64_t m = 6;
     int64_t n = 5;
     int64_t lda = m;
@@ -83,28 +73,17 @@ void TestLapack() {
                          9.83f, 5.04f,  4.86f,  8.83f, 9.80f,  -8.99f,
                          5.45f, -0.27f, 4.85f,  0.74f, 10.00f, -6.02f,
                          3.16f, 7.98f,  3.01f,  5.80f, 4.27f,  -5.31f};
-    printf("LAPACKE_sgesvd (column-major, high-level) Example Program "
-           "Results\n");
     int64_t info = LAPACKE_sgesvd(LAPACK_COL_MAJOR, 'A', 'A', m, n, a.data(),
                                   lda, s.data(), u.data(), ldu, vt.data(), ldvt,
                                   superb.data());
-    if (info > 0) {
-        printf("The algorithm computing SVD failed to converge.\n");
-        exit(1);
-    }
-    print_matrix("Singular values", 1, n, s.data(), 1);
-    print_matrix("Left singular vectors (stored columnwise)", m, n, u.data(),
-                 ldu);
-    print_matrix("Right singular vectors (stored rowwise)", n, n, vt.data(),
-                 ldvt);
+    std::cout << "TestLapack done" << std::endl;
 }
 
 void BinaryEW(const Tensor& lhs,
               const Tensor& rhs,
               Tensor& dst,
               BinaryEWOpCode op_code) {
-    TestBlas();
-    TestLapack();
+    TestMKL();
 
     // lhs, rhs and dst must be on the same device.
     for (auto device :

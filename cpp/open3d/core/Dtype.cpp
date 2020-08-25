@@ -47,14 +47,14 @@ namespace core {
 namespace dtype {
 
 // clang-format off
-const Dtype Undefined = Dtype(Dtype::DtypeCode::Undefined, 1, "Undefined");
-const Dtype Float32   = Dtype(Dtype::DtypeCode::Float,     4, "Float32"  );
-const Dtype Float64   = Dtype(Dtype::DtypeCode::Float,     8, "Float64"  );
-const Dtype Int32     = Dtype(Dtype::DtypeCode::Int,       4, "Int32"    );
-const Dtype Int64     = Dtype(Dtype::DtypeCode::Int,       8, "Int64"    );
-const Dtype UInt8     = Dtype(Dtype::DtypeCode::UInt,      1, "UInt8"    );
-const Dtype UInt16    = Dtype(Dtype::DtypeCode::UInt,      2, "UInt16"   );
-const Dtype Bool      = Dtype(Dtype::DtypeCode::Bool,      1, "Bool"     );
+const Dtype Undefined = Dtype(Dtype::DtypeCode::Undefined, 1);
+const Dtype Float32   = Dtype(Dtype::DtypeCode::Float,     4);
+const Dtype Float64   = Dtype(Dtype::DtypeCode::Float,     8);
+const Dtype Int32     = Dtype(Dtype::DtypeCode::Int,       4);
+const Dtype Int64     = Dtype(Dtype::DtypeCode::Int,       8);
+const Dtype UInt8     = Dtype(Dtype::DtypeCode::UInt,      1);
+const Dtype UInt16    = Dtype(Dtype::DtypeCode::UInt,      2);
+const Dtype Bool      = Dtype(Dtype::DtypeCode::Bool,      1);
 // clang-format on
 
 }  // namespace dtype

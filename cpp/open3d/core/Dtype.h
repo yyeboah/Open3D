@@ -34,17 +34,20 @@
 namespace open3d {
 namespace core {
 
-class Dtype {
-public:
-    static const Dtype Undefined;
-    static const Dtype Float32;
-    static const Dtype Float64;
-    static const Dtype Int32;
-    static const Dtype Int64;
-    static const Dtype UInt8;
-    static const Dtype UInt16;
-    static const Dtype Bool;
+class Dtype;
 
+namespace dtype {
+extern const Dtype Undefined;
+extern const Dtype Float32;
+extern const Dtype Float64;
+extern const Dtype Int32;
+extern const Dtype Int64;
+extern const Dtype UInt8;
+extern const Dtype UInt16;
+extern const Dtype Bool;
+}  // namespace dtype
+
+class Dtype {
 public:
     enum class DtypeCode {
         Undefined,
@@ -69,7 +72,7 @@ public:
     template <typename T>
     static inline const Dtype FromType() {
         utility::LogError("Unsupported data type");
-        return Dtype::Undefined;
+        return dtype::Undefined;
     }
 
     int64_t ByteSize() const { return byte_size_; }
@@ -91,37 +94,37 @@ private:
 
 template <>
 inline const Dtype Dtype::FromType<float>() {
-    return Dtype::Float32;
+    return dtype::Float32;
 }
 
 template <>
 inline const Dtype Dtype::FromType<double>() {
-    return Dtype::Float64;
+    return dtype::Float64;
 }
 
 template <>
 inline const Dtype Dtype::FromType<int32_t>() {
-    return Dtype::Int32;
+    return dtype::Int32;
 }
 
 template <>
 inline const Dtype Dtype::FromType<int64_t>() {
-    return Dtype::Int64;
+    return dtype::Int64;
 }
 
 template <>
 inline const Dtype Dtype::FromType<uint8_t>() {
-    return Dtype::UInt8;
+    return dtype::UInt8;
 }
 
 template <>
 inline const Dtype Dtype::FromType<uint16_t>() {
-    return Dtype::UInt16;
+    return dtype::UInt16;
 }
 
 template <>
 inline const Dtype Dtype::FromType<bool>() {
-    return Dtype::Bool;
+    return dtype::Bool;
 }
 
 }  // namespace core

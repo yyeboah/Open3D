@@ -49,7 +49,7 @@ TEST_P(ImagePermuteDevices, ConstructorNoArg) {
     EXPECT_EQ(im.GetRows(), 0);
     EXPECT_EQ(im.GetCols(), 0);
     EXPECT_EQ(im.GetChannels(), 1);
-    EXPECT_EQ(im.GetDtype(), core::Dtype::Float32);
+    EXPECT_EQ(im.GetDtype(), core::dtype::Float32);
     EXPECT_EQ(im.GetDevice(), core::Device("CPU:0"));
 }
 
@@ -60,7 +60,7 @@ TEST_P(ImagePermuteDevices, Constructor) {
     int64_t rows = 480;
     int64_t cols = 640;
     int64_t channels = 3;
-    core::Dtype dtype = core::Dtype::UInt8;
+    core::Dtype dtype = core::dtype::UInt8;
     tgeometry::Image im(rows, cols, channels, dtype, device);
     EXPECT_EQ(im.GetRows(), rows);
     EXPECT_EQ(im.GetCols(), cols);
@@ -76,13 +76,13 @@ TEST_P(ImagePermuteDevices, Constructor) {
 
     // Check all dtypes.
     for (const core::Dtype& dtype : std::vector<core::Dtype>{
-                 core::Dtype::Float32,
-                 core::Dtype::Float64,
-                 core::Dtype::Int32,
-                 core::Dtype::Int64,
-                 core::Dtype::UInt8,
-                 core::Dtype::UInt16,
-                 core::Dtype::Bool,
+                 core::dtype::Float32,
+                 core::dtype::Float64,
+                 core::dtype::Int32,
+                 core::dtype::Int64,
+                 core::dtype::UInt8,
+                 core::dtype::UInt16,
+                 core::dtype::Bool,
          }) {
         EXPECT_NO_THROW(tgeometry::Image(rows, cols, channels, dtype, device));
     }
@@ -94,7 +94,7 @@ TEST_P(ImagePermuteDevices, ConstructorFromTensor) {
     int64_t rows = 480;
     int64_t cols = 640;
     int64_t channels = 3;
-    core::Dtype dtype = core::Dtype::UInt8;
+    core::Dtype dtype = core::dtype::UInt8;
 
     // 2D Tensor. IsSame() tests memory sharing and shape matching.
     core::Tensor t_2d({rows, cols}, dtype, device);

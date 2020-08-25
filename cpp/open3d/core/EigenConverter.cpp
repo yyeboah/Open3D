@@ -39,7 +39,7 @@ Eigen::Vector3d TensorToEigenVector3d(const core::Tensor &tensor) {
                           tensor.GetShape().ToString());
     }
     core::Tensor dtensor =
-            tensor.To(core::Dtype::Float64).Copy(core::Device("CPU:0"));
+            tensor.To(core::dtype::Float64).Copy(core::Device("CPU:0"));
     return Eigen::Vector3d(dtensor[0].Item<double>(), dtensor[1].Item<double>(),
                            dtensor[2].Item<double>());
 }
@@ -48,7 +48,7 @@ core::Tensor EigenVector3dToTensor(const Eigen::Vector3d &value,
                                    core::Dtype dtype,
                                    const core::Device &device) {
     // The memory will be copied.
-    return core::Tensor(value.data(), {3}, core::Dtype::Float64, device)
+    return core::Tensor(value.data(), {3}, core::dtype::Float64, device)
             .To(dtype);
 }
 

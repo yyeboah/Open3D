@@ -37,38 +37,38 @@ namespace pybind_utils {
 
 core::Dtype ArrayFormatToDtype(const std::string& format) {
     if (format == py::format_descriptor<float>::format()) {
-        return core::Dtype::Float32;
+        return core::dtype::Float32;
     } else if (format == py::format_descriptor<double>::format()) {
-        return core::Dtype::Float64;
+        return core::dtype::Float64;
     } else if (format == py::format_descriptor<int32_t>::format()) {
-        return core::Dtype::Int32;
+        return core::dtype::Int32;
     } else if (format == py::format_descriptor<int64_t>::format()) {
-        return core::Dtype::Int64;
+        return core::dtype::Int64;
     } else if (format == py::format_descriptor<uint8_t>::format()) {
-        return core::Dtype::UInt8;
+        return core::dtype::UInt8;
     } else if (format == py::format_descriptor<uint16_t>::format()) {
-        return core::Dtype::UInt16;
+        return core::dtype::UInt16;
     } else if (format == py::format_descriptor<bool>::format()) {
-        return core::Dtype::Bool;
+        return core::dtype::Bool;
     } else {
         utility::LogError("Unsupported data type.");
     }
 }
 
 std::string DtypeToArrayFormat(const core::Dtype& dtype) {
-    if (dtype == core::Dtype::Float32) {
+    if (dtype == core::dtype::Float32) {
         return py::format_descriptor<float>::format();
-    } else if (dtype == core::Dtype::Float64) {
+    } else if (dtype == core::dtype::Float64) {
         return py::format_descriptor<double>::format();
-    } else if (dtype == core::Dtype::Int32) {
+    } else if (dtype == core::dtype::Int32) {
         return py::format_descriptor<int32_t>::format();
-    } else if (dtype == core::Dtype::Int64) {
+    } else if (dtype == core::dtype::Int64) {
         return py::format_descriptor<int64_t>::format();
-    } else if (dtype == core::Dtype::UInt8) {
+    } else if (dtype == core::dtype::UInt8) {
         return py::format_descriptor<uint8_t>::format();
-    } else if (dtype == core::Dtype::UInt16) {
+    } else if (dtype == core::dtype::UInt16) {
         return py::format_descriptor<uint16_t>::format();
-    } else if (dtype == core::Dtype::Bool) {
+    } else if (dtype == core::dtype::Bool) {
         return py::format_descriptor<bool>::format();
     } else {
         utility::LogError("Unsupported data type.");

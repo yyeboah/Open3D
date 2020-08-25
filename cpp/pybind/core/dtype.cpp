@@ -35,14 +35,14 @@ namespace open3d {
 void pybind_core_dtype(py::module &m) {
     py::class_<core::Dtype, std::shared_ptr<core::Dtype>> dtype(
             m, "Dtype", "Open3D data types.");
-    dtype.def_readonly_static("Undefined", &core::Dtype::Undefined);
-    dtype.def_readonly_static("Float32", &core::Dtype::Float32);
-    dtype.def_readonly_static("Float64", &core::Dtype::Float64);
-    dtype.def_readonly_static("Int32", &core::Dtype::Int32);
-    dtype.def_readonly_static("Int64", &core::Dtype::Int64);
-    dtype.def_readonly_static("UInt8", &core::Dtype::UInt8);
-    dtype.def_readonly_static("UInt16", &core::Dtype::UInt16);
-    dtype.def_readonly_static("Bool", &core::Dtype::Bool);
+    dtype.def_readonly_static("Undefined", &core::dtype::Undefined);
+    dtype.def_readonly_static("Float32", &core::dtype::Float32);
+    dtype.def_readonly_static("Float64", &core::dtype::Float64);
+    dtype.def_readonly_static("Int32", &core::dtype::Int32);
+    dtype.def_readonly_static("Int64", &core::dtype::Int64);
+    dtype.def_readonly_static("UInt8", &core::dtype::UInt8);
+    dtype.def_readonly_static("UInt16", &core::dtype::UInt16);
+    dtype.def_readonly_static("Bool", &core::dtype::Bool);
     dtype.def("byte_size", &core::Dtype::ByteSize);
     dtype.def("__eq__", &core::Dtype::operator==);
     dtype.def("__ene__", &core::Dtype::operator!=);

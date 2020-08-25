@@ -41,12 +41,12 @@ void FromLegacyPointCloud(benchmark::State& state, const core::Device& device) {
 
     // Warm up.
     tgeometry::PointCloud pcd = tgeometry::PointCloud::FromLegacyPointCloud(
-            legacy_pcd, core::Dtype::Float32, device);
+            legacy_pcd, core::dtype::Float32, device);
     (void)pcd;
 
     for (auto _ : state) {
         tgeometry::PointCloud pcd = tgeometry::PointCloud::FromLegacyPointCloud(
-                legacy_pcd, core::Dtype::Float32, device);
+                legacy_pcd, core::dtype::Float32, device);
     }
 }
 

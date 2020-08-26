@@ -302,58 +302,6 @@ if(WITH_OPENMP)
     endif()
 endif()
 
-# Dirent
-if(WIN32)
-    message(STATUS "Building library 3rdparty_dirent from source (WIN32)")
-    build_3rdparty_library(3rdparty_dirent DIRECTORY dirent)
-    set(DIRENT_TARGET "3rdparty_dirent")
-    list(APPEND Open3D_3RDPARTY_PRIVATE_TARGETS "${DIRENT_TARGET}")
-endif()
-
-# Eigen3
-if(USE_SYSTEM_EIGEN3)
-    find_package(Eigen3)
-    if(TARGET Eigen3::Eigen)
-        message(STATUS "Using installed third-party library Eigen3 ${EIGEN3_VERSION_STRING}")
-        # Eigen3 is a publicly visible dependency, so add it to the list of
-        # modules we need to find in the Open3D config script.
-        list(APPEND Open3D_3RDPARTY_EXTERNAL_MODULES "Eigen3")
-        set(EIGEN3_TARGET "Eigen3::Eigen")
-    else()
-        message(STATUS "Unable to find installed third-party library Eigen3")
-        set(USE_SYSTEM_EIGEN3 OFF)
-    endif()
-endif()
-if(NOT USE_SYSTEM_EIGEN3)
-    build_3rdparty_library(3rdparty_eigen3 PUBLIC DIRECTORY Eigen INCLUDE_DIRS Eigen INCLUDE_ALL)
-    set(EIGEN3_TARGET "3rdparty_eigen3")
-endif()
-list(APPEND Open3D_3RDPARTY_PUBLIC_TARGETS "${EIGEN3_TARGET}")
-
-
-# fmt
-if(USE_SYSTEM_FMT)
-    find_package(fmt)
-    if(TARGET fmt::fmt-header-only)
-        message(STATUS "Using installed third-party library fmt (header only)")
-        list(APPEND Open3D_3RDPARTY_EXTERNAL_MODULES "fmt")
-        set(FMT_TARGET "fmt::fmt-header-only")
-    elseif(TARGET fmt::fmt)
-        message(STATUS "Using installed third-party library fmt")
-        list(APPEND Open3D_3RDPARTY_EXTERNAL_MODULES "fmt")
-        set(FMT_TARGET "fmt::fmt")
-    else()
-        message(STATUS "Unable to find installed third-party library fmt")
-        set(USE_SYSTEM_FMT OFF)
-    endif()
-endif()
-if(NOT USE_SYSTEM_FMT)
-    # We set the FMT_HEADER_ONLY macro, so no need to actually compile the source
-    build_3rdparty_library(3rdparty_fmt PUBLIC DIRECTORY fmt INCLUDE_DIRS include/)
-    target_compile_definitions(3rdparty_fmt INTERFACE FMT_HEADER_ONLY=1)
-    set(FMT_TARGET "3rdparty_fmt")
-endif()
-list(APPEND Open3D_3RDPARTY_PUBLIC_TARGETS "${FMT_TARGET}")
 
 # Pybind11
 if(USE_SYSTEM_PYBIND11)

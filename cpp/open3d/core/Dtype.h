@@ -26,9 +26,8 @@
 
 #pragma once
 
+#include <iostream>
 #include <string>
-
-#include "open3d/utility/Console.h"
 
 namespace open3d {
 namespace core {
@@ -69,7 +68,7 @@ public:
     /// e.g. FromType<float>(). Unsupported type results in an exception.
     template <typename T>
     static inline const Dtype FromType() {
-        utility::LogError("Unsupported data type");
+        std::cout << "Unsupported data type" << std::endl;
         return dtype::Undefined;
     }
 

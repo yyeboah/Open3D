@@ -26,16 +26,11 @@
 
 #include "pybind/open3d_pybind.h"
 
-#include "open3d/utility/Console.h"
 #include "pybind/core/core.h"
 
 namespace open3d {
 
 PYBIND11_MODULE(pybind, m) {
-    open3d::utility::Logger::i().print_fcn_ = [](const std::string& msg) {
-        py::print(msg);
-    };
-
     m.doc() = "Python binding of Open3D";
 
     // Check Open3D CXX11_ABI with

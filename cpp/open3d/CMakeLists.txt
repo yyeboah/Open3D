@@ -6,19 +6,15 @@ configure_file("${PROJECT_SOURCE_DIR}/cpp/open3d/Open3DConfig.h.in"
 
 # Subdirectories
 add_subdirectory(core)
-add_subdirectory(utility)
-
 
 # Source group for Visual Studio
 add_source_group(core)
-add_source_group(utility)
 
 # note: adding at least one real source file to any target that references
 # reference: https://cmake.org/cmake/help/v3.12/command/add_library.html#object-libraries
 add_library(${CMAKE_PROJECT_NAME}
     Open3DConfig.cpp
     $<TARGET_OBJECTS:core>
-    $<TARGET_OBJECTS:utility>
     ${GUI_OBJECTS}
 )
 open3d_show_and_abort_on_warning(${PROJECT_NAME})

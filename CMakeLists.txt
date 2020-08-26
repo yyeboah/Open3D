@@ -8,8 +8,6 @@ set (CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum OS X deployment ve
 
 # Open3D build options
 option(BUILD_SHARED_LIBS          "Build shared libraries"                   OFF)
-option(BUILD_EXAMPLES             "Build Open3D examples programs"           ON )
-option(BUILD_UNIT_TESTS           "Build Open3D unit tests"                  OFF)
 option(BUILD_BENCHMARKS           "Build the micro benchmarks"               OFF)
 option(BUILD_PYTHON_MODULE        "Build the python module"                  ON )
 option(BUILD_CUDA_MODULE          "Build the CUDA module"                    OFF)
@@ -381,8 +379,6 @@ include(3rdparty/find_dependencies.cmake)
 # Open3D library
 add_subdirectory(cpp)
 
-# Examples
-add_subdirectory(examples)
 
 # Install CMake configuration files
 install(EXPORT ${PROJECT_NAME}Targets NAMESPACE ${PROJECT_NAME}:: DESTINATION ${Open3D_INSTALL_CMAKE_DIR})
@@ -441,7 +437,6 @@ open3d_aligned_print("Build Shared Library" "${BUILD_SHARED_LIBS}")
 if(WIN32)
     open3d_aligned_print("Use Windows Static Runtime" "${STATIC_WINDOWS_RUNTIME}")
 endif()
-open3d_aligned_print("Build Unit Tests" "${BUILD_UNIT_TESTS}")
 open3d_aligned_print("Build Examples" "${BUILD_CPP_EXAMPLES}")
 open3d_aligned_print("Build Python Module" "${BUILD_PYTHON_MODULE}")
 if(BUILD_PYTHON_MODULE)

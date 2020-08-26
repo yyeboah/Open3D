@@ -38,7 +38,6 @@ option(PREFER_OSX_HOMEBREW        "Prefer Homebrew libs over frameworks"     ON 
 option(BUILD_LIBREALSENSE         "Build support for Intel RealSense camera" OFF)
 option(BUILD_AZURE_KINECT         "Build support for Azure Kinect sensor"    OFF)
 # ML library options
-option(BUILD_TENSORFLOW_OPS       "Build ops for Tensorflow"                 OFF)
 option(BUILD_PYTORCH_OPS          "Build ops for Pytorch"                    OFF)
 option(BUILD_RPC_INTERFACE        "Build the RPC interface"                  OFF)
 
@@ -442,7 +441,6 @@ open3d_aligned_print("Build Python Module" "${BUILD_PYTHON_MODULE}")
 if(BUILD_PYTHON_MODULE)
     open3d_aligned_print("- with Jupyter Notebook Support" "${BUILD_JUPYTER_EXTENSION}")
 endif()
-open3d_aligned_print("Build Tensorflow Ops" "${BUILD_TENSORFLOW_OPS}")
 open3d_aligned_print("Build Pytorch Ops" "${BUILD_PYTORCH_OPS}")
 open3d_aligned_print("Build Benchmarks" "${BUILD_BENCHMARKS}")
 open3d_aligned_print("Build RPC interface" "${BUILD_RPC_INTERFACE}")

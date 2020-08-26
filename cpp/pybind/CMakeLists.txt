@@ -117,37 +117,6 @@ set( COMPILED_MODULE_PATH_LIST $<TARGET_FILE:${PACKAGE_NAME}> )
 
 set(GENERATED_OUTPUTS "")
 
-# add additional optional compiled modules
-if ( BUILD_TENSORFLOW_OPS )
-    list( APPEND COMPILED_MODULE_PATH_LIST $<TARGET_FILE:open3d_tf_ops> )
-    add_custom_command( OUTPUT "${CMAKE_BINARY_DIR}/lib/ml/tf/python/ops/ops.py"
-            COMMAND ${PYTHON_EXECUTABLE} generate_tf_ops_wrapper.py --input "${PYTHON_PACKAGE_SRC_DIR}/open3d/ml/tf/python/ops/ops.py.in" --output "${CMAKE_BINARY_DIR}/lib/ml/tf/python/ops/ops.py" --lib $<TARGET_FILE:open3d_tf_ops>
-                        DEPENDS open3d_tf_ops
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        COMMENT "Generating python ops.py" )
-
-    list(APPEND GENERATED_OUTPUTS "${CMAKE_BINARY_DIR}/lib/ml/tf/python/ops/ops.py")
-    # find tensorflow to get some info for the _build_config.py
-    find_package(Tensorflow)
-endif ()
-
-# add additional optional compiled modules
-if ( BUILD_PYTORCH_OPS )
-    list( APPEND COMPILED_MODULE_PATH_LIST $<TARGET_FILE:open3d_torch_ops> )
-    add_custom_command( OUTPUT "${CMAKE_BINARY_DIR}/lib/ml/torch/python/ops.py" "${CMAKE_BINARY_DIR}/lib/ml/torch/python/return_types.py"
-            COMMAND ${PYTHON_EXECUTABLE} generate_torch_ops_wrapper.py --input_ops_py_in "${PYTHON_PACKAGE_SRC_DIR}/open3d/ml/torch/python/ops.py.in" --input_return_types_py_in "${PYTHON_PACKAGE_SRC_DIR}/open3d/ml/torch/python/return_types.py.in" --output_dir "${CMAKE_BINARY_DIR}/lib/ml/torch/python/" --lib $<TARGET_FILE:open3d_torch_ops> --tensorflow_ops_dir "${CMAKE_CURRENT_SOURCE_DIR}/../open3d/ml/TensorFlow"
-                        DEPENDS open3d_torch_ops
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        COMMENT "Generating python ops.py and return_types.py" )
-
-    list(APPEND GENERATED_OUTPUTS "${CMAKE_BINARY_DIR}/lib/ml/torch/python/ops.py" "${CMAKE_BINARY_DIR}/lib/ml/torch/python/return_types.py")
-    # get the pytorch version information again here for _build_config.py
-    # because it is not safe to call find_package(Pytorch) again.
-    execute_process(
-        COMMAND ${PYTHON_EXECUTABLE} "-c"
-                "import torch; print(torch.__version__, end='')"
-        OUTPUT_VARIABLE Pytorch_VERSION)
-endif ()
 
 configure_file("_build_config.py.in"
                "${CMAKE_BINARY_DIR}/lib/_build_config.py")

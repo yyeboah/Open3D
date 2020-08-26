@@ -28,7 +28,6 @@
 
 #include <string>
 
-#include "open3d/core/Dispatch.h"
 #include "open3d/utility/Console.h"
 
 namespace open3d {

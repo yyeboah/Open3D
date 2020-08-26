@@ -25,14 +25,6 @@ configure_file("${PYTHON_PACKAGE_SRC_DIR}/setup.py"
                "${PYTHON_PACKAGE_DST_DIR}/setup.py")
 configure_file("${PYTHON_PACKAGE_SRC_DIR}/open3d/__init__.py"
                "${PYTHON_PACKAGE_DST_DIR}/open3d/__init__.py")
-configure_file("${PYTHON_PACKAGE_SRC_DIR}/open3d/visualization/__init__.py"
-               "${PYTHON_PACKAGE_DST_DIR}/open3d/visualization/__init__.py")
-configure_file("${PYTHON_PACKAGE_SRC_DIR}/open3d/visualization/gui/__init__.py"
-               "${PYTHON_PACKAGE_DST_DIR}/open3d/visualization/gui/__init__.py")
-configure_file("${PYTHON_PACKAGE_SRC_DIR}/open3d/visualization/rendering/__init__.py"
-               "${PYTHON_PACKAGE_DST_DIR}/open3d/visualization/rendering/__init__.py")
-configure_file("${PYTHON_PACKAGE_SRC_DIR}/open3d/j_visualizer.py"
-               "${PYTHON_PACKAGE_DST_DIR}/open3d/j_visualizer.py")
 configure_file("${PYTHON_PACKAGE_SRC_DIR}/conda_meta/conda_build_config.yaml"
                "${PYTHON_PACKAGE_DST_DIR}/conda_meta/conda_build_config.yaml")
 configure_file("${PYTHON_PACKAGE_SRC_DIR}/conda_meta/meta.yaml"

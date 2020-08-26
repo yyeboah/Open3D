@@ -11,7 +11,6 @@ option(BUILD_SHARED_LIBS          "Build shared libraries"                   OFF
 option(BUILD_BENCHMARKS           "Build the micro benchmarks"               OFF)
 option(BUILD_PYTHON_MODULE        "Build the python module"                  ON )
 option(BUILD_CUDA_MODULE          "Build the CUDA module"                    OFF)
-option(BUILD_GUI                  "Builds new GUI"                           ON )
 option(BUILD_JUPYTER_EXTENSION    "Enable Jupyter support for Open3D"        OFF)
 option(WITH_OPENMP                "Use OpenMP multi-threading"               ON )
 option(ENABLE_HEADLESS_RENDERING  "Use OSMesa for headless rendering"        OFF)
@@ -98,10 +97,6 @@ endif()
 if (APPLE AND ENABLE_HEADLESS_RENDERING)
     message(STATUS "Headless rendering is not supported on Mac OS")
     set(ENABLE_HEADLESS_RENDERING OFF)
-endif()
-if(ENABLE_HEADLESS_RENDERING AND BUILD_GUI)
-    message(STATUS "Headless rendering disables the Open3D GUI")
-    set(BUILD_GUI OFF)
 endif()
 if(ENABLE_HEADLESS_RENDERING AND (USE_SYSTEM_GLEW OR USE_SYSTEM_GLFW))
     message(STATUS "Headless rendering requires customized GLEW and GLFW builds")
@@ -228,15 +223,6 @@ if (BUILD_CUDA_MODULE)
 endif ()
 
 # OS specific settings
-if(BUILD_GUI AND WIN32)
-    if(NOT COMMAND target_link_options)  # CMake 3.13+ required
-        # GLEW and Open3D make direct OpenGL calls and link to opengl32.lib;
-        # Filament needs to link through bluegl.lib.
-        # See https://github.com/google/filament/issues/652
-        string(APPEND CMAKE_EXE_LINKER_FLAGS " /force:multiple")
-        string(APPEND CMAKE_SHARED_LINKER_FLAGS " /force:multiple")
-    endif()
-endif()
 if(WIN32)
     # Windows defaults to hidden symbol visibility, override that
     # TODO: It would be better to explictly export symbols.
@@ -341,12 +327,6 @@ function(open3d_set_global_properties target)
             # https://docs.microsoft.com/en-us/cpp/build/reference/mp-build-with-multiple-processes?view=vs-2019
             target_compile_options(${target} PRIVATE /MP)
             if(COMMAND target_link_options) # target_link_options add in 3.13
-                if(BUILD_GUI)
-                    # GLEW and Open3D make direct OpenGL calls and link to opengl32.lib;
-                    # Filament needs to link through bluegl.lib.
-                    # See https://github.com/google/filament/issues/652
-                    target_link_options(${target} PRIVATE /force:multiple)
-                endif()
                 # The examples' .pdb files use up a lot of space and cause us to run
                 # out of space on Github Actions. Compressing gives us another couple of GB.
                 target_link_options(${target} PRIVATE /pdbcompress)
@@ -431,7 +411,6 @@ open3d_aligned_print("OpenMP" "${WITH_OPENMP}")
 open3d_aligned_print("Headless Rendering" "${ENABLE_HEADLESS_RENDERING}")
 open3d_aligned_print("Azure Kinect Support" "${BUILD_AZURE_KINECT}")
 open3d_aligned_print("CUDA Support" "${BUILD_CUDA_MODULE}")
-open3d_aligned_print("Build GUI" "${BUILD_GUI}")
 open3d_aligned_print("Build Shared Library" "${BUILD_SHARED_LIBS}")
 if(WIN32)
     open3d_aligned_print("Use Windows Static Runtime" "${STATIC_WINDOWS_RUNTIME}")

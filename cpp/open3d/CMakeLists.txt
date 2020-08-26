@@ -5,41 +5,20 @@ configure_file("${PROJECT_SOURCE_DIR}/cpp/open3d/Open3DConfig.h.in"
                "${PROJECT_SOURCE_DIR}/cpp/open3d/Open3DConfig.h")
 
 # Subdirectories
-add_subdirectory(camera)
 add_subdirectory(core)
-add_subdirectory(geometry)
-add_subdirectory(tgeometry)
-add_subdirectory(io)
-add_subdirectory(pipelines)
 add_subdirectory(utility)
-add_subdirectory(visualization)
-if (BUILD_GUI)
-    add_subdirectory(visualization/gui)
-    set(GUI_OBJECTS "$<TARGET_OBJECTS:GUI>")
-endif()
+
 
 # Source group for Visual Studio
-add_source_group(camera)
 add_source_group(core)
-add_source_group(geometry)
-add_source_group(tgeometry)
-add_source_group(io)
-add_source_group(pipelines)
 add_source_group(utility)
-add_source_group(visualization)
 
 # note: adding at least one real source file to any target that references
 # reference: https://cmake.org/cmake/help/v3.12/command/add_library.html#object-libraries
 add_library(${CMAKE_PROJECT_NAME}
     Open3DConfig.cpp
-    $<TARGET_OBJECTS:camera>
     $<TARGET_OBJECTS:core>
-    $<TARGET_OBJECTS:geometry>
-    $<TARGET_OBJECTS:tgeometry>
-    $<TARGET_OBJECTS:io>
-    $<TARGET_OBJECTS:pipelines>
     $<TARGET_OBJECTS:utility>
-    $<TARGET_OBJECTS:visualization>
     ${GUI_OBJECTS}
 )
 open3d_show_and_abort_on_warning(${PROJECT_NAME})

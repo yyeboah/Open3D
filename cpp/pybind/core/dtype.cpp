@@ -46,8 +46,6 @@ void pybind_core_dtype(py::module &m) {
     dtype.def("byte_size", &core::Dtype::ByteSize);
     dtype.def("__eq__", &core::Dtype::operator==);
     dtype.def("__ene__", &core::Dtype::operator!=);
-    // dtype.def("__repr__", &core::Dtype::ToString);
-    // dtype.def("__str__", &core::Dtype::ToString);
 }
 
 }  // namespace open3d

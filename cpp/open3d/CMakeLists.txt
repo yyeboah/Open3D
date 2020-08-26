@@ -54,22 +54,3 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         PATTERN "*.cuh"
 )
 
-# Install the Open3DConfig.cmake and Open3DConfigVersion.cmake
-install(FILES
-        "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/Open3DConfig.cmake"
-        "${PROJECT_BINARY_DIR}/Open3DConfigVersion.cmake"
-        DESTINATION "${Open3D_INSTALL_CMAKE_DIR}" COMPONENT dev)
-
-# uninstall target
-if(NOT TARGET uninstall)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
-                   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-                   IMMEDIATE @ONLY)
-
-    add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P
-                      ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-endif()
-
-# Export GUI_RESOURCE_FILES to parent CMake context (cpp/open3d/)
-set(GUI_RESOURCE_FILES ${GUI_RESOURCE_FILES} PARENT_SCOPE)
-set(GUI_RESOURCE_DIR ${GUI_RESOURCE_DIR} PARENT_SCOPE)

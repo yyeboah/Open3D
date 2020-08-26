@@ -12,14 +12,7 @@ option(BUILD_PYTHON_MODULE        "Build the python module"                  ON 
 option(WITH_OPENMP                "Use OpenMP multi-threading"               ON )
 option(STATIC_WINDOWS_RUNTIME     "Use static (MT/MTd) Windows runtime"      ON )
 option(GLIBCXX_USE_CXX11_ABI      "Set -D_GLIBCXX_USE_CXX11_ABI=1"           OFF)
-# 3rd-party build options
-option(USE_SYSTEM_EIGEN3          "Use system pre-installed eigen3"          OFF)
-option(USE_SYSTEM_FLANN           "Use system pre-installed flann"           OFF)
-option(USE_SYSTEM_FMT             "Use system pre-installed fmt"             OFF)
 option(USE_SYSTEM_PYBIND11        "Use system pre-installed pybind11"        OFF)
-# Sensor options
-option(BUILD_LIBREALSENSE         "Build support for Intel RealSense camera" OFF)
-option(BUILD_AZURE_KINECT         "Build support for Azure Kinect sensor"    OFF)
 
 # Default build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -255,88 +248,6 @@ include(3rdparty/find_dependencies.cmake)
 # Open3D library
 add_subdirectory(cpp)
 
-
 # Install CMake configuration files
 install(EXPORT ${PROJECT_NAME}Targets NAMESPACE ${PROJECT_NAME}:: DESTINATION ${Open3D_INSTALL_CMAKE_DIR})
 export(EXPORT ${PROJECT_NAME}Targets NAMESPACE ${PROJECT_NAME}::)
-
-# `make check-style` checks style for c++/cuda/python/ipynb files
-add_custom_target(check-style
-    COMMAND ${PYTHON_EXECUTABLE}
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/check_style.py
-    COMMENT "Python executable used for style check: ${PYTHON_EXECUTABLE}."
-)
-
-# `make apply-style` applies style for c++/cuda/python/ipynb files
-add_custom_target(apply-style
-    COMMAND ${PYTHON_EXECUTABLE}
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/check_style.py --do_apply_style
-    COMMENT "Python executable used for style check: ${PYTHON_EXECUTABLE}."
-)
-
-# `make check-cpp-style` checks style for c++/cuda files.
-# This works outside of python virtualenv.
-add_custom_target(check-cpp-style
-    COMMAND ${CMAKE_COMMAND}
-    -DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
-    -DDO_APPLY_STYLE=OFF
-    -P ${CMAKE_CURRENT_SOURCE_DIR}/util/check_cpp_style.cmake
-)
-
-# `make apply-cpp-style` applies style for c++/cuda files.
-# This works outside of python virtualenv.
-add_custom_target(apply-cpp-style
-    COMMAND ${CMAKE_COMMAND}
-    -DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
-    -DDO_APPLY_STYLE=ON
-    -P ${CMAKE_CURRENT_SOURCE_DIR}/util/check_cpp_style.cmake
-)
-
-function(open3d_aligned_print first second)
-    string(LENGTH "${first}" first_len)
-    math(EXPR star_len "40 - ${first_len}")
-    # CMake 3.15+ has string(REPEAT), but this is backwards compatible
-    string(SUBSTRING "........................................" 0 ${star_len} stars)
-    message(STATUS "  ${first} ${stars} ${second}")
-endfunction()
-
-message(STATUS "========================================================================")
-message(STATUS "Open3D ${PROJECT_VERSION} Configuration Summary")
-message(STATUS "========================================================================")
-message(STATUS "Enabled Features:")
-open3d_aligned_print("OpenMP" "${WITH_OPENMP}")
-open3d_aligned_print("Build Shared Library" "${BUILD_SHARED_LIBS}")
-if(WIN32)
-    open3d_aligned_print("Use Windows Static Runtime" "${STATIC_WINDOWS_RUNTIME}")
-endif()
-open3d_aligned_print("Build Python Module" "${BUILD_PYTHON_MODULE}")
-if(GLIBCXX_USE_CXX11_ABI)
-    set(usage "1")
-else()
-    set(usage "0")
-endif()
-open3d_aligned_print("Force GLIBCXX_USE_CXX11_ABI=" "${usage}")
-message(STATUS "========================================================================")
-message(STATUS "Third-Party Dependencies:")
-set(deps
-    FMT
-    PYBIND11
-)
-foreach(dep IN ITEMS ${deps})
-    if(${dep}_TARGET)
-        if(NOT USE_SYSTEM_${dep})
-            set(usage "yes (build from source)")
-        else()
-            set(usage "yes")
-            if(${dep}_VERSION_STRING)
-                set(usage "${usage} (v${${dep}_VERSION_STRING})")
-            elseif(${dep}_VERSION)
-                set(usage "${usage} (v${${dep}_VERSION})")
-            endif()
-        endif()
-    else()
-        set(usage "no")
-    endif()
-    open3d_aligned_print("${dep}" "${usage}")
-endforeach()
-message(STATUS "========================================================================")

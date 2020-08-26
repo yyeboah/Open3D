@@ -109,20 +109,12 @@ set( COMPILED_MODULE_PATH_LIST $<TARGET_FILE:${PACKAGE_NAME}> )
 
 set(GENERATED_OUTPUTS "")
 
-
-configure_file("_build_config.py.in"
-               "${CMAKE_BINARY_DIR}/lib/_build_config.py")
-
 add_custom_target(python-package
     COMMAND ${CMAKE_COMMAND}
             -DPYTHON_PACKAGE_SRC_DIR=${PYTHON_PACKAGE_SRC_DIR}
             -DPYTHON_PACKAGE_DST_DIR=${PYTHON_PACKAGE_DST_DIR}
             -DPYTHON_VERSION=${PYTHON_VERSION}
             "-DCOMPILED_MODULE_PATH_LIST=${COMPILED_MODULE_PATH_LIST}"
-            -DBUILD_JUPYTER_EXTENSION=${BUILD_JUPYTER_EXTENSION}
-            -DBUILD_TENSORFLOW_OPS=${BUILD_TENSORFLOW_OPS}
-            -DBUILD_PYTORCH_OPS=${BUILD_PYTORCH_OPS}
-            -DBUILD_GUI=${BUILD_GUI}
             -DGUI_RESOURCE_DIR=${GUI_RESOURCE_DIR}
             -DPROJECT_EMAIL=${PROJECT_EMAIL}
             -DPROJECT_HOME=${PROJECT_HOME}
@@ -162,24 +154,6 @@ add_custom_target(install-pip-package
 # Ref: https://stackoverflow.com/a/33791008/1255535
 add_custom_target(install-python-package
     COMMAND ${PYTHON_EXECUTABLE} setup.py install --single-version-externally-managed --root=/
-    WORKING_DIRECTORY ${PYTHON_PACKAGE_DST_DIR}
-    DEPENDS python-package
-)
-
-# Use `make conda-package` to create conda package in the build directory
-# Note that we don't provide `make install-conda-package` similar to pip. This
-# is becuase:
-#     1) `make install-pip-whell` works in conda environment for local build
-#     2) `make conda-package` is mainly for internal use to distribute conda
-add_custom_target(conda-package
-    COMMAND ${CMAKE_COMMAND}
-            -DPYTHON_PACKAGE_DST_DIR=${PYTHON_PACKAGE_DST_DIR}
-            -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
-            -P ${CMAKE_CURRENT_SOURCE_DIR}/check_and_install_conda_deps.cmake
-    # If we put the following `conda-build` in check_and_install_conda_deps.cmake, it
-    # causes broken pipe problem while running conda build. So we put it here.
-    COMMAND conda-build conda_meta --output-folder conda_package
-    COMMAND echo "conda package created at ${PYTHON_PACKAGE_DST_DIR}/conda_package"
     WORKING_DIRECTORY ${PYTHON_PACKAGE_DST_DIR}
     DEPENDS python-package
 )

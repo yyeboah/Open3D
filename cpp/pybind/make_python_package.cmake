@@ -25,9 +25,3 @@ configure_file("${PYTHON_PACKAGE_SRC_DIR}/setup.py"
                "${PYTHON_PACKAGE_DST_DIR}/setup.py")
 configure_file("${PYTHON_PACKAGE_SRC_DIR}/open3d/__init__.py"
                "${PYTHON_PACKAGE_DST_DIR}/open3d/__init__.py")
-configure_file("${PYTHON_PACKAGE_SRC_DIR}/conda_meta/conda_build_config.yaml"
-               "${PYTHON_PACKAGE_DST_DIR}/conda_meta/conda_build_config.yaml")
-configure_file("${PYTHON_PACKAGE_SRC_DIR}/conda_meta/meta.yaml"
-               "${PYTHON_PACKAGE_DST_DIR}/conda_meta/meta.yaml")
-file(COPY "${PYTHON_PACKAGE_DST_DIR}/../_build_config.py"
-     DESTINATION "${PYTHON_PACKAGE_DST_DIR}/open3d/" )

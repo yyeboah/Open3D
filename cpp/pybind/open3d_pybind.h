@@ -27,7 +27,6 @@
 #pragma once
 
 #include <pybind11/detail/internals.h>
-#include <pybind11/eigen.h>
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
@@ -35,27 +34,8 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
-#include "open3d/utility/Eigen.h"
-
 namespace py = pybind11;
 using namespace py::literals;
-
-typedef std::vector<Eigen::Matrix4d, open3d::utility::Matrix4d_allocator>
-        temp_eigen_matrix4d;
-typedef std::vector<Eigen::Vector4i, open3d::utility::Vector4i_allocator>
-        temp_eigen_vector4i;
-
-PYBIND11_MAKE_OPAQUE(std::vector<int>);
-PYBIND11_MAKE_OPAQUE(std::vector<int64_t>);
-PYBIND11_MAKE_OPAQUE(std::vector<uint8_t>);
-PYBIND11_MAKE_OPAQUE(std::vector<float>);
-PYBIND11_MAKE_OPAQUE(std::vector<double>);
-PYBIND11_MAKE_OPAQUE(std::vector<Eigen::Vector3d>);
-PYBIND11_MAKE_OPAQUE(std::vector<Eigen::Vector3i>);
-PYBIND11_MAKE_OPAQUE(std::vector<Eigen::Vector2d>);
-PYBIND11_MAKE_OPAQUE(std::vector<Eigen::Vector2i>);
-PYBIND11_MAKE_OPAQUE(temp_eigen_matrix4d);
-PYBIND11_MAKE_OPAQUE(temp_eigen_vector4i);
 
 // some helper functions
 namespace pybind11 {

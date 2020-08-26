@@ -28,7 +28,6 @@
 
 #include "open3d/utility/Console.h"
 #include "pybind/core/core.h"
-#include "pybind/utility/utility.h"
 
 namespace open3d {
 
@@ -43,11 +42,6 @@ PYBIND11_MODULE(pybind, m) {
     // import open3d as o3d; print(o3d.open3d_pybind._GLIBCXX_USE_CXX11_ABI)
     m.add_object("_GLIBCXX_USE_CXX11_ABI",
                  _GLIBCXX_USE_CXX11_ABI ? Py_True : Py_False);
-
-    // The binding order matters: if a class haven't been binded, binding the
-    // user of this class will result in "could not convert default argument
-    // into a Python object" error.
-    pybind_utility(m);
 
     pybind_core(m);
 }

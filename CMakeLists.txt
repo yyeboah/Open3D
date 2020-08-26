@@ -8,62 +8,18 @@ set (CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum OS X deployment ve
 
 # Open3D build options
 option(BUILD_SHARED_LIBS          "Build shared libraries"                   OFF)
-option(BUILD_BENCHMARKS           "Build the micro benchmarks"               OFF)
 option(BUILD_PYTHON_MODULE        "Build the python module"                  ON )
-option(BUILD_CUDA_MODULE          "Build the CUDA module"                    OFF)
-option(BUILD_JUPYTER_EXTENSION    "Enable Jupyter support for Open3D"        OFF)
 option(WITH_OPENMP                "Use OpenMP multi-threading"               ON )
-option(ENABLE_HEADLESS_RENDERING  "Use OSMesa for headless rendering"        OFF)
 option(STATIC_WINDOWS_RUNTIME     "Use static (MT/MTd) Windows runtime"      ON )
 option(GLIBCXX_USE_CXX11_ABI      "Set -D_GLIBCXX_USE_CXX11_ABI=1"           OFF)
 # 3rd-party build options
 option(USE_SYSTEM_EIGEN3          "Use system pre-installed eigen3"          OFF)
 option(USE_SYSTEM_FLANN           "Use system pre-installed flann"           OFF)
 option(USE_SYSTEM_FMT             "Use system pre-installed fmt"             OFF)
-option(USE_SYSTEM_GLEW            "Use system pre-installed glew"            OFF)
-option(USE_SYSTEM_GLFW            "Use system pre-installed glfw"            OFF)
-option(USE_SYSTEM_GOOGLETEST      "Use system pre-installed googletest"      OFF)
-option(USE_SYSTEM_IMGUI           "Use system pre-installed imgui"           OFF)
-option(USE_SYSTEM_JPEG            "Use system pre-installed jpeg"            OFF)
-option(USE_SYSTEM_LIBLZF          "Use system pre-installed liblzf"          OFF)
-option(USE_SYSTEM_PNG             "Use system pre-installed png"             OFF)
 option(USE_SYSTEM_PYBIND11        "Use system pre-installed pybind11"        OFF)
-option(USE_SYSTEM_QHULL           "Use system pre-installed qhull"           OFF)
-option(USE_SYSTEM_TINYGLTF        "Use system pre-installed tinygltf"        OFF)
-option(USE_SYSTEM_TINYOBJLOADER   "Use system pre-installed tinyobjloader"   OFF)
-option(BUILD_FILAMENT_FROM_SOURCE "Build filament from source"               OFF)
-option(PREFER_OSX_HOMEBREW        "Prefer Homebrew libs over frameworks"     ON )
 # Sensor options
 option(BUILD_LIBREALSENSE         "Build support for Intel RealSense camera" OFF)
 option(BUILD_AZURE_KINECT         "Build support for Azure Kinect sensor"    OFF)
-# ML library options
-option(BUILD_PYTORCH_OPS          "Build ops for Pytorch"                    OFF)
-option(BUILD_RPC_INTERFACE        "Build the RPC interface"                  OFF)
-
-# In ExternalProject_Add, if THIRD_PARTY_DOWNLOAD_DIR is specified, CMake will
-# first try to look for the required files in THIRD_PARTY_DOWNLOAD_DIR, before
-# downloading it from the internet. The files inside THIRD_PARTY_DOWNLOAD_DIR
-# are prepared manually by the user. This is only supported by limited 3rd party
-# libraries.
-if(THIRD_PARTY_DOWNLOAD_DIR)
-    message(STATUS "THIRD_PARTY_DOWNLOAD_DIR is set to ${THIRD_PARTY_DOWNLOAD_DIR}.")
-else()
-    message(STATUS "THIRD_PARTY_DOWNLOAD_DIR is not specified, will download directly.")
-endif()
-
-set(FILAMENT_PRECOMPILED_ROOT "" CACHE PATH "Path to precompiled Filament library (used if BUILD_FILAMENT_FROM_SOURCE=OFF)")
-set(FILAMENT_SOURCE_ROOT "" CACHE PATH "Path to Filament library sources (used if BUILD_FILAMENT_FROM_SOURCE=ON)")
-
-if (PREFER_OSX_HOMEBREW)
-    set(CMAKE_FIND_FRAMEWORK LAST)
-    set(CMAKE_FIND_APPBUNDLE LAST)
-endif()
-
-# Cache variables for specifying the GPU architectures
-set(CUDA_ARCH "Auto" CACHE STRING "Selects GPU architectures for code generation, \
-one of (Auto|BasicPTX|User). Set to 'User' to set a custom list of architectures" )
-set_property(CACHE CUDA_ARCH PROPERTY STRINGS Auto BasicPTX User)
-set(CUDA_ARCH_USER "" CACHE STRING "User defined list of GPU architectures, e.g. 3.5 5.0+PTX Turing" )
 
 # Default build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -71,15 +27,6 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif()
 
-# Set OpenGL policy
-if (POLICY CMP0072)
-    cmake_policy(SET CMP0072 NEW)
-    set(CMP0072_VALUE NEW)
-    if (NOT USE_SYSTEM_GLFW)
-        cmake_policy(SET CMP0072 OLD)
-        set(CMP0072_VALUE OLD)
-    endif()
-endif()
 # Set policy for hidden symbol visibility
 if(POLICY CMP0063)
     cmake_policy(SET CMP0063 NEW)

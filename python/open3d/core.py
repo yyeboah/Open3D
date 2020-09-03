@@ -193,7 +193,9 @@ class Tensor(o3d.pybind.core.Tensor):
             dtype = _numpy_dtype_to_dtype(data.dtype)
         if device is None:
             device = Device("CPU:0")
-        super(Tensor, self).__init__(data, dtype, device)
+        print(type(data))
+        print(data.dtype)
+        super(Tensor, self).__init__(data, dtype=dtype, device=device)
 
     @cast_to_py_tensor
     def __getitem__(self, key):

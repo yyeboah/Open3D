@@ -35,6 +35,7 @@
 #include "open3d/core/Dtype.h"
 #include "open3d/core/SizeVector.h"
 #include "open3d/core/TensorKey.h"
+#include "open3d/utility/Optional.h"
 #include "pybind/core/core.h"
 #include "pybind/docstring.h"
 #include "pybind/open3d_pybind.h"
@@ -74,24 +75,41 @@ static std::vector<T> ToFlatVector(
     return std::vector<T>(start, start + info.size);
 }
 
-void pybind_core_tensor(py::module& m) {
-    py::class_<Tensor> tensor(
-            m, "Tensor",
-            "A Tensor is a view of a data Blob with shape, stride, data_ptr.");
+void bind_tensor_constructors(py::class_<Tensor>& tensor) {
+    // Constructor from numpy array.
+    tensor.def(
+            py::init([](py::array data, const utility::optional<Dtype>& dtype,
+                        const utility::optional<Device>& device) {
+                // Convert data to Tensor. By using py::array, pybind takes care
+                // of importing:
+                // - np.ndarray
+                // - tuple (nested shapes must be convertible to array form)
+                // - list (nested shapes must be convertible to array form)
+                // - int, float, bool scalar values
+                Tensor t = PyArrayToTensor(data, /*inplace=*/true);
+                bool inplace = true;
 
-    // Constructor from numpy array
-    tensor.def(py::init([](py::array np_array, const Dtype& dtype,
-                           const Device& device) {
-        py::buffer_info info = np_array.request();
-        SizeVector shape(info.shape.begin(), info.shape.end());
-        Tensor t;
-        DISPATCH_DTYPE_TO_TEMPLATE_WITH_BOOL(dtype, [&]() {
-            t = Tensor(ToFlatVector<scalar_t>(np_array), shape, dtype, device);
-        });
-        return t;
-    }));
+                // Convert dtype.
+                if (dtype.has_value() && t.GetDtype() != dtype.value()) {
+                    t = t.To(dtype.value(), /*copy=*/true);
+                    inplace = false;
+                }
 
-    // Tensor creation API
+                // Convert device.
+                if (device.has_value() && t.GetDevice() != device.value()) {
+                    t = t.Copy(device.value());
+                    inplace = false;
+                }
+
+                // Guarantee a copy of the user's input.
+                if (inplace) {
+                    t = t.Copy();
+                }
+                return t;
+            }),
+            "data"_a, "dtype"_a = py::none(), "device"_a = py::none());
+
+    // Tensor creation API.
     tensor.def_static("empty", &Tensor::Empty);
     tensor.def_static("full", &Tensor::Full<float>);
     tensor.def_static("full", &Tensor::Full<double>);
@@ -103,11 +121,64 @@ void pybind_core_tensor(py::module& m) {
     tensor.def_static("ones", &Tensor::Ones);
     tensor.def_static("eye", &Tensor::Eye);
     tensor.def_static("diag", &Tensor::Diag);
+}
 
-    // Tensor copy
+void bind_tensor_properties(py::class_<Tensor>& tensor) {
+    tensor.def_property_readonly(
+            "shape", [](const Tensor& tensor) { return tensor.GetShape(); });
+    tensor.def_property_readonly("strides", [](const Tensor& tensor) {
+        return tensor.GetStrides();
+    });
+    tensor.def_property_readonly("dtype", &Tensor::GetDtype);
+    tensor.def_property_readonly("device", &Tensor::GetDevice);
+    tensor.def_property_readonly("blob", &Tensor::GetBlob);
+    tensor.def_property_readonly("ndim", &Tensor::NumDims);
+    tensor.def("num_elements", &Tensor::NumElements);
+
+    // Print tensor.
+    tensor.def("__repr__",
+               [](const Tensor& tensor) { return tensor.ToString(); });
+    tensor.def("__str__",
+               [](const Tensor& tensor) { return tensor.ToString(); });
+}
+
+void bind_tensor_accessors(py::class_<Tensor>& tensor) {
+    // __getitem__ related.
+    tensor.def("_getitem", [](const Tensor& tensor, const TensorKey& tk) {
+        return tensor.GetItem(tk);
+    });
+    tensor.def("_getitem_vector",
+               [](const Tensor& tensor, const std::vector<TensorKey>& tks) {
+                   return tensor.GetItem(tks);
+               });
+
+    // __setitem__ related.
+    tensor.def("_setitem",
+               [](Tensor& tensor, const TensorKey& tk, const Tensor& value) {
+                   return tensor.SetItem(tk, value);
+               });
+    tensor.def("_setitem_vector",
+               [](Tensor& tensor, const std::vector<TensorKey>& tks,
+                  const Tensor& value) { return tensor.SetItem(tks, value); });
+
+    // Get item from Tensor of one element.
+    tensor.def("_item_float", [](const Tensor& t) { return t.Item<float>(); });
+    tensor.def("_item_double",
+               [](const Tensor& t) { return t.Item<double>(); });
+    tensor.def("_item_int32_t",
+               [](const Tensor& t) { return t.Item<int32_t>(); });
+    tensor.def("_item_int64_t",
+               [](const Tensor& t) { return t.Item<int64_t>(); });
+    tensor.def("_item_uint8_t",
+               [](const Tensor& t) { return t.Item<uint8_t>(); });
+    tensor.def("_item_bool", [](const Tensor& t) { return t.Item<bool>(); });
+}
+
+void bind_tensor_converters(py::class_<Tensor>& tensor) {
+    // Tensor copy.
     tensor.def("shallow_copy_from", &Tensor::ShallowCopyFrom);
 
-    // Device transfer
+    // Device transfer.
     tensor.def("cuda", [](const Tensor& tensor, int device_id = 0) {
               if (!cuda::IsAvailable()) {
                   utility::LogError(
@@ -124,7 +195,7 @@ void pybind_core_tensor(py::module& m) {
         return tensor.Copy(Device(Device::DeviceType::CPU, 0));
     });
 
-    // Buffer I/O for Numpy and DLPack(PyTorch)
+    // Buffer I/O for Numpy and DLPack(PyTorch).
     tensor.def("numpy", &core::TensorToPyArray);
 
     tensor.def_static("from_numpy", [](py::array np_array) {
@@ -133,18 +204,18 @@ void pybind_core_tensor(py::module& m) {
 
     tensor.def("to_dlpack", [](const Tensor& tensor) {
         DLManagedTensor* dl_managed_tensor = tensor.ToDLPack();
-        // See PyTorch's torch/csrc/Module.cpp
+        // See PyTorch's torch/csrc/Module.cpp.
         auto capsule_destructor = [](PyObject* data) {
             DLManagedTensor* dl_managed_tensor =
                     (DLManagedTensor*)PyCapsule_GetPointer(data, "dltensor");
             if (dl_managed_tensor) {
-                // the dl_managed_tensor has not been consumed,
-                // call deleter ourselves
+                // the dl_managed_tensor has not been consumed, call deleter
+                // ourselves.
                 dl_managed_tensor->deleter(
                         const_cast<DLManagedTensor*>(dl_managed_tensor));
             } else {
-                // The dl_managed_tensor has been consumed
-                // PyCapsule_GetPointer has set an error indicator
+                // The dl_managed_tensor has been consumed.
+                // PyCapsule_GetPointer has set an error indicator.
                 PyErr_Clear();
             }
         };
@@ -168,37 +239,22 @@ void pybind_core_tensor(py::module& m) {
         return t;
     });
 
-    /// Linalg operations
+    // Casting.
+    tensor.def("to", &Tensor::To);
+    tensor.def("T", &Tensor::T);
+    tensor.def("contiguous", &Tensor::Contiguous);
+}
+
+void bind_tensor_linalg_ops(py::class_<Tensor>& tensor) {
     tensor.def("matmul", &Tensor::Matmul);
     tensor.def("lstsq", &Tensor::LeastSquares);
     tensor.def("solve", &Tensor::Solve);
     tensor.def("inv", &Tensor::Inverse);
     tensor.def("svd", &Tensor::SVD);
+}
 
-    tensor.def("_getitem", [](const Tensor& tensor, const TensorKey& tk) {
-        return tensor.GetItem(tk);
-    });
-
-    tensor.def("_getitem_vector",
-               [](const Tensor& tensor, const std::vector<TensorKey>& tks) {
-                   return tensor.GetItem(tks);
-               });
-
-    tensor.def("_setitem",
-               [](Tensor& tensor, const TensorKey& tk, const Tensor& value) {
-                   return tensor.SetItem(tk, value);
-               });
-
-    tensor.def("_setitem_vector",
-               [](Tensor& tensor, const std::vector<TensorKey>& tks,
-                  const Tensor& value) { return tensor.SetItem(tks, value); });
-
-    // Casting
-    tensor.def("to", &Tensor::To);
-    tensor.def("T", &Tensor::T);
-    tensor.def("contiguous", &Tensor::Contiguous);
-
-    // Binary element-wise ops
+void bind_tensor_math_ops(py::class_<Tensor>& tensor) {
+    // Binary element-wise ops.
     BIND_BINARY_OP_ALL_DTYPES(add, Add, CONST_ARG);
     BIND_BINARY_OP_ALL_DTYPES(add_, Add_, NON_CONST_ARG);
     BIND_BINARY_OP_ALL_DTYPES(sub, Sub, CONST_ARG);
@@ -208,7 +264,7 @@ void pybind_core_tensor(py::module& m) {
     BIND_BINARY_OP_ALL_DTYPES(div, Div, CONST_ARG);
     BIND_BINARY_OP_ALL_DTYPES(div_, Div_, NON_CONST_ARG);
 
-    // Binary boolean element-wise ops
+    // Binary boolean element-wise ops.
     BIND_BINARY_OP_ALL_DTYPES(logical_and, LogicalAnd, CONST_ARG);
     BIND_BINARY_OP_ALL_DTYPES(logical_and_, LogicalAnd_, NON_CONST_ARG);
     BIND_BINARY_OP_ALL_DTYPES(logical_or, LogicalOr, CONST_ARG);
@@ -228,19 +284,7 @@ void pybind_core_tensor(py::module& m) {
     BIND_BINARY_OP_ALL_DTYPES(ne, Ne, CONST_ARG);
     BIND_BINARY_OP_ALL_DTYPES(ne_, Ne_, NON_CONST_ARG);
 
-    // Getters and setters as peoperty
-    tensor.def_property_readonly(
-            "shape", [](const Tensor& tensor) { return tensor.GetShape(); });
-    tensor.def_property_readonly("strides", [](const Tensor& tensor) {
-        return tensor.GetStrides();
-    });
-    tensor.def_property_readonly("dtype", &Tensor::GetDtype);
-    tensor.def_property_readonly("device", &Tensor::GetDevice);
-    tensor.def_property_readonly("blob", &Tensor::GetBlob);
-    tensor.def_property_readonly("ndim", &Tensor::NumDims);
-    tensor.def("num_elements", &Tensor::NumElements);
-
-    // Unary element-wise ops
+    // Unary element-wise ops.
     tensor.def("sqrt", &Tensor::Sqrt);
     tensor.def("sqrt_", &Tensor::Sqrt_);
     tensor.def("sin", &Tensor::Sin);
@@ -256,13 +300,13 @@ void pybind_core_tensor(py::module& m) {
     tensor.def("logical_not", &Tensor::LogicalNot);
     tensor.def("logical_not_", &Tensor::LogicalNot_);
 
-    // Boolean
+    // Boolean.
     tensor.def("_non_zero", &Tensor::NonZero);
     tensor.def("_non_zero_numpy", &Tensor::NonZeroNumpy);
     tensor.def("all", &Tensor::All);
     tensor.def("any", &Tensor::Any);
 
-    // Reduction ops
+    // Reduction ops.
     tensor.def("sum", &Tensor::Sum);
     tensor.def("mean", &Tensor::Mean);
     tensor.def("prod", &Tensor::Prod);
@@ -271,30 +315,25 @@ void pybind_core_tensor(py::module& m) {
     tensor.def("argmin_", &Tensor::ArgMin);
     tensor.def("argmax_", &Tensor::ArgMax);
 
-    // Comparison
+    // Comparison.
     tensor.def("allclose", &Tensor::AllClose, "other"_a, "rtol"_a = 1e-5,
                "atol"_a = 1e-8);
     tensor.def("isclose", &Tensor::IsClose, "other"_a, "rtol"_a = 1e-5,
                "atol"_a = 1e-8);
     tensor.def("issame", &Tensor::IsSame);
+}
 
-    // Print tensor
-    tensor.def("__repr__",
-               [](const Tensor& tensor) { return tensor.ToString(); });
-    tensor.def("__str__",
-               [](const Tensor& tensor) { return tensor.ToString(); });
+void pybind_core_tensor(py::module& m) {
+    py::class_<Tensor> tensor(
+            m, "Tensor",
+            "A Tensor is a view of a data Blob with shape, stride, data_ptr.");
 
-    // Get item from Tensor of one element
-    tensor.def("_item_float", [](const Tensor& t) { return t.Item<float>(); });
-    tensor.def("_item_double",
-               [](const Tensor& t) { return t.Item<double>(); });
-    tensor.def("_item_int32_t",
-               [](const Tensor& t) { return t.Item<int32_t>(); });
-    tensor.def("_item_int64_t",
-               [](const Tensor& t) { return t.Item<int64_t>(); });
-    tensor.def("_item_uint8_t",
-               [](const Tensor& t) { return t.Item<uint8_t>(); });
-    tensor.def("_item_bool", [](const Tensor& t) { return t.Item<bool>(); });
+    bind_tensor_constructors(tensor);
+    bind_tensor_properties(tensor);
+    bind_tensor_accessors(tensor);
+    bind_tensor_converters(tensor);
+    bind_tensor_linalg_ops(tensor);
+    bind_tensor_math_ops(tensor);
 }
 
 }  // namespace core

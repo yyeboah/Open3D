@@ -35,14 +35,23 @@
 namespace open3d {
 namespace pybind_utils {
 
-core::Dtype ArrayFormatToDtype(const std::string& format) {
+core::Dtype ArrayFormatToDtype(const std::string& format, size_t byte_size) {
+    // In general, format characters follows the standard:
+    // https://docs.python.org/3/library/struct.html#format-characters
+    //
+    // However, some integer dtypes have aliases. E.g. "l" can be 8 bytes as
+    // well.
     if (format == py::format_descriptor<float>::format()) {
         return core::Dtype::Float32;
     } else if (format == py::format_descriptor<double>::format()) {
         return core::Dtype::Float64;
-    } else if (format == py::format_descriptor<int32_t>::format()) {
+    } else if ((format == py::format_descriptor<int32_t>::format()) ||
+               (format == "i" && byte_size == 4) ||
+               (format == "l" && byte_size == 4)) {
         return core::Dtype::Int32;
-    } else if (format == py::format_descriptor<int64_t>::format()) {
+    } else if ((format == py::format_descriptor<int64_t>::format()) ||
+               (format == "q" && byte_size == 8) ||
+               (format == "l" && byte_size == 8)) {
         return core::Dtype::Int64;
     } else if (format == py::format_descriptor<uint8_t>::format()) {
         return core::Dtype::UInt8;
@@ -51,7 +60,10 @@ core::Dtype ArrayFormatToDtype(const std::string& format) {
     } else if (format == py::format_descriptor<bool>::format()) {
         return core::Dtype::Bool;
     } else {
-        utility::LogError("Unsupported data type.");
+        utility::LogError(
+                "ArrayFormatToDtype: unsupported array format {} with "
+                "byte_size {}.",
+                format, byte_size);
     }
 }
 
@@ -71,7 +83,7 @@ std::string DtypeToArrayFormat(const core::Dtype& dtype) {
     } else if (dtype == core::Dtype::Bool) {
         return py::format_descriptor<bool>::format();
     } else {
-        utility::LogError("Unsupported data type.");
+        utility::LogError("DtypeToArrayFormat: Unsupported data type.");
     }
 }
 

@@ -39,7 +39,7 @@ public:
     int count;
     PointXYZ point;
     std::vector<float> features;
-    std::vector<std::unordered_map<int, int>> labels;
+    std::vector<std::map<int, int>> labels;
 
     // Methods
     // *******
@@ -54,7 +54,7 @@ public:
         count = 0;
         point = PointXYZ();
         features = std::vector<float>(fdim);
-        labels = std::vector<std::unordered_map<int, int>>(ldim);
+        labels = std::vector<std::map<int, int>>(ldim);
     }
 
     // Method Update

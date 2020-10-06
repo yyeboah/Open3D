@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-rm -rf $HOME/repo/Open3D/build
-mkdir -p $HOME/repo/Open3D/build
-pushd $HOME/repo/Open3D/build
+rm -rf $HOME/repo/Open3DM/build
+mkdir -p $HOME/repo/Open3DM/build
+pushd $HOME/repo/Open3DM/build
 
 eval "$(conda shell.bash hook)"
 conda activate open3d3

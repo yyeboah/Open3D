@@ -5,7 +5,7 @@ set(FILAMENT_ROOT "${CMAKE_BINARY_DIR}/filament-binaries")
 ExternalProject_Add(
     ext_filament
     PREFIX filament
-    GIT_REPOSITORY https://github.com/google/filament.git
+    GIT_REPOSITORY /home/yixing/repo/filament
     GIT_TAG v1.8.1
     UPDATE_COMMAND ""
     CMAKE_ARGS

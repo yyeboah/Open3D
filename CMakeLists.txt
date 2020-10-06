@@ -453,8 +453,6 @@ include(3rdparty/find_dependencies.cmake)
 # Open3D library
 add_subdirectory(cpp)
 
-# Examples
-add_subdirectory(examples)
 
 # Install CMake configuration files
 install(EXPORT ${PROJECT_NAME}Targets NAMESPACE ${PROJECT_NAME}:: DESTINATION ${Open3D_INSTALL_CMAKE_DIR})

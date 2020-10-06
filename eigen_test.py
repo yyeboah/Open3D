@@ -22,3 +22,4 @@ if __name__ == '__main__':
     input_array = np.ones((2, 4), dtype=np.float64)
     expect_exception = True
     test_Vector3dVector(input_array, expect_exception)
+    print("done test")

@@ -20,11 +20,6 @@ if (NOT BUILD_AZURE_KINECT)
     endforeach(TMP_PATH)
 endif()
 
-# TODO: handle conditional compilation more systematically
-if (NOT BUILD_GUI)
-    list(FILTER UNIT_TEST_SOURCE_FILES EXCLUDE REGEX .*/visualization/rendering/.*cpp)
-endif()
-
 if (NOT BUILD_RPC_INTERFACE)
     list(FILTER UNIT_TEST_SOURCE_FILES EXCLUDE REGEX .*/io/rpc/RemoteFunctions.cpp)
 endif()

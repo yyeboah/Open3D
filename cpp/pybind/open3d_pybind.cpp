@@ -35,7 +35,6 @@
 #include "pybind/pipelines/pipelines.h"
 #include "pybind/t/t.h"
 #include "pybind/utility/utility.h"
-#include "pybind/visualization/visualization.h"
 
 namespace open3d {
 
@@ -64,7 +63,6 @@ PYBIND11_MODULE(pybind, m) {
     ml::pybind_ml(m);
     io::pybind_io(m);
     pipelines::pybind_pipelines(m);
-    visualization::pybind_visualization(m);
 }
 
 }  // namespace open3d

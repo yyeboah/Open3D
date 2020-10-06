@@ -20,7 +20,10 @@ ExternalProject_Add(
         -DUSE_STATIC_LIBCXX=ON
         -DFILAMENT_SUPPORTS_VULKAN=OFF
         -DFILAMENT_SKIP_SAMPLES=ON
+    TEST_COMMAND cp /usr/lib/llvm-7/lib/libc++.a /usr/lib/llvm-7/lib/libc++abi.a /home/yixing/repo/Open3DM/build/filament-binaries/lib/x86_64
 )
+
+
 
 set(filament_LIBRARIES
     filameshio
@@ -37,4 +40,6 @@ set(filament_LIBRARIES
     meshoptimizer
     smol-v
     utils
+    c++
+    c++abi
 )

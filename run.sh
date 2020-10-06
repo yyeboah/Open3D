@@ -19,11 +19,13 @@ cmake -DBUILD_RPC_INTERFACE=OFF \
       -DBUILD_TENSORFLOW_OPS=OFF \
       -DBUILD_PYTORCH_OPS=OFF \
       -DBUILD_CUDA_MODULE=OFF \
-      -DCMAKE_C_COMPILER=clang \
-      -DCMAKE_CXX_COMPILER=clang++ \
+      -DCMAKE_C_COMPILER=gcc \
+      -DCMAKE_CXX_COMPILER=g++ \
       -DBUILD_UNIT_TESTS=ON \
       -DTHIRD_PARTY_DOWNLOAD_DIR=$HOME/open3d_downloads \
       -DCMAKE_INSTALL_PREFIX=~/open3d_install ..
+
+make VERBOSE=1 -j$(nproc)
 
 make VERBOSE=1 tests -j$(nproc)
 

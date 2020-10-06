@@ -1,3 +1,4 @@
+
 // ----------------------------------------------------------------------------
 // -                        Open3D: www.open3d.org                            -
 // ----------------------------------------------------------------------------
@@ -24,11 +25,10 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#pragma once
-
-#include <iostream>
-#include <string>
+#include "open3d/core/Dtype.h"
 
 namespace open3d {
-namespace core {}  // namespace core
+namespace core {
+namespace dtype {}  // namespace dtype
+}  // namespace core
 }  // namespace open3d

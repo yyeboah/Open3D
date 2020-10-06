@@ -34,12 +34,6 @@ set(PACKAGE_NAME pybind)
 
 file(GLOB_RECURSE PY_ALL_SOURCE_FILES "*.cpp")
 
-if (NOT BUILD_GUI)
-    list(REMOVE_ITEM PY_ALL_SOURCE_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/visualization/gui/gui.cpp")
-    list(REMOVE_ITEM PY_ALL_SOURCE_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/visualization/rendering/rendering.cpp")
-endif()
 
 if (NOT BUILD_AZURE_KINECT)
     list(REMOVE_ITEM PY_ALL_SOURCE_FILES
@@ -80,9 +74,7 @@ open3d_set_global_properties(${PACKAGE_NAME})
 if (BUILD_AZURE_KINECT)
     target_compile_definitions(${PACKAGE_NAME} PRIVATE BUILD_AZURE_KINECT)
 endif()
-if (BUILD_GUI)
-    target_compile_definitions(${PACKAGE_NAME} PRIVATE BUILD_GUI)
-endif()
+
 
 target_link_libraries(${PACKAGE_NAME} PRIVATE ${CMAKE_PROJECT_NAME})
 if (WIN32)
@@ -117,51 +109,12 @@ set( COMPILED_MODULE_PATH_LIST $<TARGET_FILE:${PACKAGE_NAME}> )
 
 set(GENERATED_OUTPUTS "")
 
-# add additional optional compiled modules
-if ( BUILD_TENSORFLOW_OPS )
-    list( APPEND COMPILED_MODULE_PATH_LIST $<TARGET_FILE:open3d_tf_ops> )
-    add_custom_command( OUTPUT "${CMAKE_BINARY_DIR}/lib/ml/tf/python/ops/ops.py"
-            COMMAND ${PYTHON_EXECUTABLE} generate_tf_ops_wrapper.py --input "${PYTHON_PACKAGE_SRC_DIR}/open3d/ml/tf/python/ops/ops.py.in" --output "${CMAKE_BINARY_DIR}/lib/ml/tf/python/ops/ops.py" --lib $<TARGET_FILE:open3d_tf_ops>
-                        DEPENDS open3d_tf_ops
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        COMMENT "Generating python ops.py" )
-
-    list(APPEND GENERATED_OUTPUTS "${CMAKE_BINARY_DIR}/lib/ml/tf/python/ops/ops.py")
-    # find tensorflow to get some info for the _build_config.py
-    find_package(Tensorflow)
-endif ()
-
-# add additional optional compiled modules
-if ( BUILD_PYTORCH_OPS )
-    list( APPEND COMPILED_MODULE_PATH_LIST $<TARGET_FILE:open3d_torch_ops> )
-    add_custom_command( OUTPUT "${CMAKE_BINARY_DIR}/lib/ml/torch/python/ops.py" "${CMAKE_BINARY_DIR}/lib/ml/torch/python/return_types.py"
-            COMMAND ${PYTHON_EXECUTABLE} generate_torch_ops_wrapper.py --input_ops_py_in "${PYTHON_PACKAGE_SRC_DIR}/open3d/ml/torch/python/ops.py.in" --input_return_types_py_in "${PYTHON_PACKAGE_SRC_DIR}/open3d/ml/torch/python/return_types.py.in" --output_dir "${CMAKE_BINARY_DIR}/lib/ml/torch/python/" --lib $<TARGET_FILE:open3d_torch_ops> --tensorflow_ops_dir "${CMAKE_CURRENT_SOURCE_DIR}/../open3d/ml/TensorFlow"
-                        DEPENDS open3d_torch_ops
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                        COMMENT "Generating python ops.py and return_types.py" )
-
-    list(APPEND GENERATED_OUTPUTS "${CMAKE_BINARY_DIR}/lib/ml/torch/python/ops.py" "${CMAKE_BINARY_DIR}/lib/ml/torch/python/return_types.py")
-    # get the pytorch version information again here for _build_config.py
-    # because it is not safe to call find_package(Pytorch) again.
-    execute_process(
-        COMMAND ${PYTHON_EXECUTABLE} "-c"
-                "import torch; print(torch.__version__, end='')"
-        OUTPUT_VARIABLE Pytorch_VERSION)
-endif ()
-
-configure_file("_build_config.py.in"
-               "${CMAKE_BINARY_DIR}/lib/_build_config.py")
-
 add_custom_target(python-package
     COMMAND ${CMAKE_COMMAND}
             -DPYTHON_PACKAGE_SRC_DIR=${PYTHON_PACKAGE_SRC_DIR}
             -DPYTHON_PACKAGE_DST_DIR=${PYTHON_PACKAGE_DST_DIR}
             -DPYTHON_VERSION=${PYTHON_VERSION}
             "-DCOMPILED_MODULE_PATH_LIST=${COMPILED_MODULE_PATH_LIST}"
-            -DBUILD_JUPYTER_EXTENSION=${BUILD_JUPYTER_EXTENSION}
-            -DBUILD_TENSORFLOW_OPS=${BUILD_TENSORFLOW_OPS}
-            -DBUILD_PYTORCH_OPS=${BUILD_PYTORCH_OPS}
-            -DBUILD_GUI=${BUILD_GUI}
             -DGUI_RESOURCE_DIR=${GUI_RESOURCE_DIR}
             -DPROJECT_EMAIL=${PROJECT_EMAIL}
             -DPROJECT_HOME=${PROJECT_HOME}
@@ -201,24 +154,6 @@ add_custom_target(install-pip-package
 # Ref: https://stackoverflow.com/a/33791008/1255535
 add_custom_target(install-python-package
     COMMAND ${PYTHON_EXECUTABLE} setup.py install --single-version-externally-managed --root=/
-    WORKING_DIRECTORY ${PYTHON_PACKAGE_DST_DIR}
-    DEPENDS python-package
-)
-
-# Use `make conda-package` to create conda package in the build directory
-# Note that we don't provide `make install-conda-package` similar to pip. This
-# is becuase:
-#     1) `make install-pip-whell` works in conda environment for local build
-#     2) `make conda-package` is mainly for internal use to distribute conda
-add_custom_target(conda-package
-    COMMAND ${CMAKE_COMMAND}
-            -DPYTHON_PACKAGE_DST_DIR=${PYTHON_PACKAGE_DST_DIR}
-            -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
-            -P ${CMAKE_CURRENT_SOURCE_DIR}/check_and_install_conda_deps.cmake
-    # If we put the following `conda-build` in check_and_install_conda_deps.cmake, it
-    # causes broken pipe problem while running conda build. So we put it here.
-    COMMAND conda-build conda_meta --output-folder conda_package
-    COMMAND echo "conda package created at ${PYTHON_PACKAGE_DST_DIR}/conda_package"
     WORKING_DIRECTORY ${PYTHON_PACKAGE_DST_DIR}
     DEPENDS python-package
 )

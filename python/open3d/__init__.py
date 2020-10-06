@@ -45,27 +45,12 @@ import sys
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 from open3d._build_config import _build_config
-from open3d.pybind import camera
-from open3d.pybind import geometry
-from open3d.pybind import io
-from open3d.pybind import pipelines
 from open3d.pybind import utility
 
 import open3d.core
-import open3d.visualization
 
 __version__ = "@PROJECT_VERSION@"
 
 if int(sys.version_info[0]) < 3:
     raise Exception("Open3D only supports Python 3.")
 
-if "@BUILD_JUPYTER_EXTENSION@" == "ON":
-    from .j_visualizer import *
-
-    def _jupyter_nbextension_paths():
-        return [{
-            "section": "notebook",
-            "src": "static",
-            "dest": "open3d",
-            "require": "open3d/extension",
-        }]

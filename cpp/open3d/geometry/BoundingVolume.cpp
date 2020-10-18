@@ -318,16 +318,13 @@ std::vector<Eigen::Vector3d> AxisAlignedBoundingBox::GetBoxPoints() const {
 
 std::vector<int> AxisAlignedBoundingBox::GetPointIndicesWithinBoundingBoxTBB(
         const std::vector<Eigen::Vector3d>& points) const {
-    int N = points.size();
-
     auto is_selected = [&](const Eigen::Vector3d& point) -> bool {
         return point(0) >= min_bound_(0) && point(0) <= max_bound_(0) &&
                point(1) >= min_bound_(1) && point(1) <= max_bound_(1) &&
                point(2) >= min_bound_(2) && point(2) <= max_bound_(2);
     };
 
-    // Scan (prefix-sum).
-    // E.g. prefix_sum = [0, 0, 1, 2, 2, 2, 3]
+    int N = points.size();
     std::vector<int> result(N);
     int total_sum = tbb::parallel_scan(
             tbb::blocked_range<int>(0, N), 0,

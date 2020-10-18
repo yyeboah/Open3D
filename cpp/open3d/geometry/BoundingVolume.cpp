@@ -323,7 +323,7 @@ std::vector<int> AxisAlignedBoundingBox::GetPointIndicesWithinBoundingBoxTBB(
     // Map.
     // E.g. selected = [0, 0, 1, 1, 0, 0, 1]
     //                       [2][3]      [6]
-    std::vector<bool> selected(N, false);
+    std::vector<int> selected(N, 0);
     tbb::parallel_for(tbb::blocked_range<int>(0, N),
                       [&](const tbb::blocked_range<int>& r) {
                           for (int i = r.begin(); i != r.end(); ++i) {
@@ -334,7 +334,7 @@ std::vector<int> AxisAlignedBoundingBox::GetPointIndicesWithinBoundingBoxTBB(
                                   point(1) <= max_bound_(1) &&
                                   point(2) >= min_bound_(2) &&
                                   point(2) <= max_bound_(2)) {
-                                  selected[i] = true;
+                                  selected[i] = 1;
                               }
                           }
                       });

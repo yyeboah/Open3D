@@ -316,39 +316,38 @@ std::vector<Eigen::Vector3d> AxisAlignedBoundingBox::GetBoxPoints() const {
     return points;
 }
 
-static std::vector<size_t> GetPointIndicesWithinBoundingBoxTBB(
-        const std::vector<Eigen::Vector3d>& points,
-        const AxisAlignedBoundingBox& box) {
-    size_t N = points.size();
+std::vector<int> AxisAlignedBoundingBox::GetPointIndicesWithinBoundingBoxTBB(
+        const std::vector<Eigen::Vector3d>& points) const {
+    int N = points.size();
 
     // Map.
     // E.g. selected = [0, 0, 1, 1, 0, 0, 1]
     //                       [2][3]      [6]
-    std::vector<size_t> selected(N, 0);
-    tbb::parallel_for(tbb::blocked_range<size_t>(0, N),
-                      [&](const tbb::blocked_range<size_t>& r) {
-                          for (size_t i = r.begin(); i != r.end(); ++i) {
+    std::vector<bool> selected(N, false);
+    tbb::parallel_for(tbb::blocked_range<int>(0, N),
+                      [&](const tbb::blocked_range<int>& r) {
+                          for (int i = r.begin(); i != r.end(); ++i) {
                               const auto& point = points[i];
-                              if (point(0) >= box.min_bound_(0) &&
-                                  point(0) <= box.max_bound_(0) &&
-                                  point(1) >= box.min_bound_(1) &&
-                                  point(1) <= box.max_bound_(1) &&
-                                  point(2) >= box.min_bound_(2) &&
-                                  point(2) <= box.max_bound_(2)) {
-                                  selected[i] = 1;
+                              if (point(0) >= min_bound_(0) &&
+                                  point(0) <= max_bound_(0) &&
+                                  point(1) >= min_bound_(1) &&
+                                  point(1) <= max_bound_(1) &&
+                                  point(2) >= min_bound_(2) &&
+                                  point(2) <= max_bound_(2)) {
+                                  selected[i] = true;
                               }
                           }
                       });
 
     // Scan (prefix-sum).
     // E.g. prefix_sum = [0, 0, 1, 2, 2, 2, 3]
-    std::vector<size_t> prefix_sum(N, 0);
-    size_t total_sum = tbb::parallel_scan(
-            tbb::blocked_range<size_t>(0, N), 0,
-            [&](const tbb::blocked_range<size_t>& r, size_t sum,
-                bool is_final_scan) -> size_t {
-                size_t temp = sum;
-                for (size_t i = r.begin(); i < r.end(); ++i) {
+    std::vector<int> prefix_sum(N, 0);
+    int total_sum = tbb::parallel_scan(
+            tbb::blocked_range<int>(0, N), 0,
+            [&](const tbb::blocked_range<int>& r, int sum,
+                bool is_final_scan) -> int {
+                int temp = sum;
+                for (int i = r.begin(); i < r.end(); ++i) {
                     temp = temp + selected[i];
                     if (is_final_scan) {
                         prefix_sum[i] = temp;
@@ -356,16 +355,16 @@ static std::vector<size_t> GetPointIndicesWithinBoundingBoxTBB(
                 }
                 return temp;
             },
-            [](size_t left, size_t right) { return left + right; });
+            [](int left, int right) { return left + right; });
 
     // Scatter.
     // E.g. result = [2, 3, 6]
-    std::vector<size_t> result(total_sum);
-    tbb::parallel_for(tbb::blocked_range<size_t>(0, N),
-                      [&](const tbb::blocked_range<size_t>& r) {
-                          for (size_t i = r.begin(); i != r.end(); ++i) {
+    std::vector<int> result(total_sum);
+    tbb::parallel_for(tbb::blocked_range<int>(0, N),
+                      [&](const tbb::blocked_range<int>& r) {
+                          for (int i = r.begin(); i != r.end(); ++i) {
                               if (selected[i]) {
-                                  size_t index = prefix_sum[i] - 1;
+                                  int index = prefix_sum[i] - 1;
                                   result[index] = i;
                               }
                           }
@@ -384,12 +383,6 @@ std::vector<size_t> AxisAlignedBoundingBox::GetPointIndicesWithinBoundingBox(
             point(2) >= min_bound_(2) && point(2) <= max_bound_(2)) {
             indices.push_back(idx);
         }
-    }
-    auto indices_tbb = GetPointIndicesWithinBoundingBoxTBB(points, *this);
-    if (indices == indices_tbb) {
-        utility::LogInfo("Equal!");
-    } else {
-        utility::LogError("Not equal!");
     }
     return indices;
 }

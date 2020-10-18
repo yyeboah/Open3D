@@ -130,6 +130,10 @@ void pybind_boundingvolume(py::module &m) {
                  &AxisAlignedBoundingBox::GetPointIndicesWithinBoundingBox,
                  "Return indices to points that are within the bounding box.",
                  "points"_a)
+            .def("get_point_indices_within_bounding_box_tbb",
+                 &AxisAlignedBoundingBox::GetPointIndicesWithinBoundingBoxTBB,
+                 "Return indices to points that are within the bounding box.",
+                 "points"_a)
             .def("get_print_info", &AxisAlignedBoundingBox::GetPrintInfo,
                  "Returns the 3D dimensions of the bounding box in string "
                  "format.")

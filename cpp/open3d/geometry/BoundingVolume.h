@@ -233,6 +233,9 @@ public:
     std::vector<size_t> GetPointIndicesWithinBoundingBox(
             const std::vector<Eigen::Vector3d>& points) const;
 
+    std::vector<int> GetPointIndicesWithinBoundingBoxTBB(
+            const std::vector<Eigen::Vector3d>& points) const;
+
     /// Returns the 3D dimensions of the bounding box in string format.
     std::string GetPrintInfo() const;
 

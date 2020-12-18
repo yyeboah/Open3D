@@ -80,6 +80,8 @@ TEST(Densor, ConstructorOneNested) {
 
     core::Densor dd{{0, 1, 2}, {3, 4, 5}};
     dd.Print();
+
+    EXPECT_ANY_THROW(core::Densor({{0, 1, 2}, {3, 4}}));
 }
 
 }  // namespace tests

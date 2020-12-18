@@ -35,7 +35,25 @@ class Densor {
 public:
     Densor(std::initializer_list<float> l) {
         values_.insert(values_.end(), l.begin(), l.end());
-        shape_ = SizeVector{static_cast<int64_t>(values_.size())};
+        int64_t dim0_size = static_cast<int64_t>(l.size());
+        shape_.push_back(dim0_size);
+    }
+
+    Densor(std::initializer_list<std::initializer_list<float>> ll) {
+        int64_t dim0_size = static_cast<int64_t>(ll.size());
+        int64_t dim1_size = -1;
+        for (const auto& l : ll) {
+            if (dim1_size == -1) {
+                dim1_size = static_cast<int64_t>(l.size());
+            } else {
+                if (static_cast<int64_t>(l.size()) != dim1_size) {
+                    utility::LogError("wrong");
+                }
+            }
+            values_.insert(values_.end(), l.begin(), l.end());
+        }
+        shape_.push_back(dim0_size);
+        shape_.push_back(dim1_size);
     }
 
     virtual ~Densor() {}
@@ -57,8 +75,11 @@ namespace open3d {
 namespace tests {
 
 TEST(Densor, ConstructorOneNested) {
-    core::Densor d{0, 1, 2, 3, 4};
+    core::Densor d{0, 1, 2, 3, 4, 5};
     d.Print();
+
+    core::Densor dd{{0, 1, 2}, {3, 4, 5}};
+    dd.Print();
 }
 
 }  // namespace tests

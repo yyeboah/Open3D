@@ -140,15 +140,7 @@ jobs:
             ${env:DEVELOPER_BUILD}="ON"
           }
           echo "After: DEVELOPER_BUILD=${env:DEVELOPER_BUILD}"
-          cmake -G "Visual Studio 16 2019" -A x64 -DDEVELOPER_BUILD="${env:DEVELOPER_BUILD}" `
-            -DCMAKE_BUILD_TYPE=Release `
-            -DBUILD_AZURE_KINECT=ON `
-            -DCMAKE_INSTALL_PREFIX="C:\Program Files\Open3D" `
-            -DBUILD_SHARED_LIBS=OFF `
-            -DSTATIC_WINDOWS_RUNTIME=ON `
-            -DBUILD_RPC_INTERFACE=ON `
-            -DBUILD_LIBREALSENSE=ON `
-            ${{ env.SRC_DIR }}
+          cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_AZURE_KINECT=ON -DCMAKE_INSTALL_PREFIX="C:\Program Files\Open3D" -DBUILD_SHARED_LIBS=OFF -DSTATIC_WINDOWS_RUNTIME=ON -DBUILD_RPC_INTERFACE=ON -DBUILD_LIBREALSENSE=ON  -DDEVELOPER_BUILD="${env:DEVELOPER_BUILD}" $${{ env.SRC_DIR }}
 
       - name: Build Python package
         shell: pwsh

@@ -135,9 +135,11 @@ jobs:
         run: |
           New-Item -Path ${{ env.BUILD_DIR }} -ItemType Directory
           cd ${{ env.BUILD_DIR }}
+          echo "Before: DEVELOPER_BUILD=${env:DEVELOPER_BUILD}"
           if (${env:DEVELOPER_BUILD} -ne "OFF") {
             ${env:DEVELOPER_BUILD}="ON"
           }
+          echo "After: DEVELOPER_BUILD=${env:DEVELOPER_BUILD}"
           cmake -G "Visual Studio 16 2019" -A x64 `
             -DCMAKE_BUILD_TYPE=Release `
             -DBUILD_AZURE_KINECT=ON `
